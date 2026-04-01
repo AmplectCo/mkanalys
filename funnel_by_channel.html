@@ -6,75 +6,79 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f6f9; color: #1a1a1a; }
-
+ 
   .header { padding: 28px 32px 20px; background: #fff; border-bottom: 1px solid #e0e0e0; }
   .header h1 { font-size: 20px; font-weight: 700; color: #1a1a1a; }
   .header p  { font-size: 13px; color: #888; margin-top: 4px; }
-
+ 
   .tabs { display: flex; gap: 0; padding: 0 32px; background: #fff; border-bottom: 2px solid #e0e0e0; }
   .tab { padding: 12px 28px; font-size: 14px; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; color: #888; transition: all .2s; }
   .tab:hover { color: #333; }
   .tab.active-esc { color: #1B4F8A; border-color: #1B4F8A; }
   .tab.active-lfc { color: #C8102E; border-color: #C8102E; }
-
+ 
   .content { padding: 24px 32px; }
-
+ 
   .channel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); gap: 20px; }
-
+ 
   .channel-card { background: #fff; border-radius: 10px; border: 1px solid #e8e8e8; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
   .channel-card.total-card { border-width: 2px; }
   .card-header { padding: 12px 18px; font-size: 13px; font-weight: 700; letter-spacing: .3px; color: #fff; display: flex; justify-content: space-between; align-items: center; }
   .card-header .subtitle { font-size: 11px; font-weight: 400; opacity: .8; }
-
+ 
   .funnel-wrap { padding: 14px 18px 16px; }
-
+ 
   .period-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .period-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; color: #aaa; }
-
+ 
   .step-row { margin-bottom: 7px; }
   .step-name { font-size: 11px; color: #666; margin-bottom: 3px; display: flex; justify-content: space-between; }
   .step-name .count { font-weight: 600; color: #333; }
   .step-name .drop  { font-size: 10px; }
-
+ 
   .bar-track { height: 14px; background: #f0f0f0; border-radius: 3px; overflow: hidden; position: relative; }
   .bar-fill  { height: 100%; border-radius: 3px; transition: width .4s ease; }
-
+ 
   .pct-label { font-size: 10px; color: #999; margin-top: 2px; }
-
+ 
   .divider { height: 1px; background: #f0f0f0; margin: 10px 0; }
-
+ 
   .legend { display: flex; gap: 16px; padding: 8px 18px 12px; font-size: 11px; color: #aaa; flex-wrap: wrap; border-top: 1px solid #f4f4f4; }
   .legend span { display: flex; align-items: center; gap: 5px; }
   .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
-
-  .summary-strip { display: flex; gap: 0; border-top: 1px solid #f0f0f0; }
-  .summary-cell { flex: 1; padding: 10px 14px; text-align: center; border-right: 1px solid #f0f0f0; }
+ 
+  .summary-strip { display: flex; gap: 0; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; background: #fafafa; }
+  .summary-cell { flex: 1; padding: 9px 10px; text-align: center; border-right: 1px solid #f0f0f0; }
   .summary-cell:last-child { border-right: none; }
-  .summary-cell .sv { font-size: 16px; font-weight: 700; }
-  .summary-cell .sl { font-size: 10px; color: #aaa; margin-top: 2px; }
+  .summary-cell .sv { font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .summary-cell .sl { font-size: 10px; color: #aaa; margin-top: 2px; line-height: 1.3; }
+  .summary-cell.highlight { background: #f0f5ff; }
   .up   { color: #1E7B4B; }
   .down { color: #C0392B; }
   .flat { color: #888; }
-
+ 
   select { padding: 6px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; background: #fff; cursor: pointer; color: #333; }
   .filter-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
   .filter-bar label { font-size: 12px; color: #888; font-weight: 600; }
-
+ 
   .no-tnc { opacity: .4; }
+ 
+  .atc-rate-bar { height: 3px; background: #e8e8e8; border-radius: 2px; margin-top: 4px; }
+  .atc-rate-fill { height: 100%; border-radius: 2px; }
 </style>
 </head>
 <body>
-
+ 
 <div class="header">
   <h1>Booking Funnel by Channel — ESC &amp; LFC</h1>
   <p>Q1 2025 vs Q1 2026 &nbsp;·&nbsp; Steps: ATC click → Booker details → Player details → Travel arrangements → Terms &amp; conditions → ATC fired → Checkout → Confirmed booking</p>
 </div>
-
+ 
 <div class="tabs">
   <div class="tab active-esc" onclick="setprop('ESC')">ESC — eurosportscamps.com</div>
-  <div class="tab" onclick="setprop_lfc()">LFC — liverpoolfccamps.com</div>
+  <div class="tab" onclick="setprop('LFC')">LFC — liverpoolfccamps.com</div>
 </div>
-
+ 
 <div class="content">
   <div class="filter-bar">
     <label>Channel:</label>
@@ -84,13 +88,14 @@
   </div>
   <div id="grid" class="channel-grid"></div>
 </div>
-
+ 
 <script>
 const DATA = {"ESC": {"channels": ["Direct", "Paid Search", "Organic Search", "Email", "Paid Social", "Referral", "Organic Social", "Cross-network", "Unassigned", "TOTAL"], "Q1 2025": {"Direct": [["ATC click", 321], ["Booker details", 372], ["Player details", 308], ["Travel arrange.", 243], ["Terms & cond.", 0], ["ATC fired", 336], ["Checkout", 257], ["Confirmed", 257]], "Paid Search": [["ATC click", 173], ["Booker details", 133], ["Player details", 120], ["Travel arrange.", 130], ["Terms & cond.", 0], ["ATC fired", 138], ["Checkout", 119], ["Confirmed", 65]], "Organic Search": [["ATC click", 153], ["Booker details", 88], ["Player details", 75], ["Travel arrange.", 119], ["Terms & cond.", 0], ["ATC fired", 134], ["Checkout", 80], ["Confirmed", 35]], "Email": [["ATC click", 49], ["Booker details", 55], ["Player details", 47], ["Travel arrange.", 51], ["Terms & cond.", 0], ["ATC fired", 44], ["Checkout", 51], ["Confirmed", 47]], "Paid Social": [["ATC click", 77], ["Booker details", 43], ["Player details", 38], ["Travel arrange.", 38], ["Terms & cond.", 0], ["ATC fired", 33], ["Checkout", 16], ["Confirmed", 7]], "Referral": [["ATC click", 22], ["Booker details", 20], ["Player details", 18], ["Travel arrange.", 21], ["Terms & cond.", 0], ["ATC fired", 17], ["Checkout", 20], ["Confirmed", 17]], "Organic Social": [["ATC click", 9], ["Booker details", 13], ["Player details", 12], ["Travel arrange.", 11], ["Terms & cond.", 0], ["ATC fired", 11], ["Checkout", 10], ["Confirmed", 9]], "Cross-network": [["ATC click", 74], ["Booker details", 5], ["Player details", 4], ["Travel arrange.", 5], ["Terms & cond.", 0], ["ATC fired", 5], ["Checkout", 5], ["Confirmed", 1]], "Unassigned": [["ATC click", 39], ["Booker details", 11], ["Player details", 7], ["Travel arrange.", 5], ["Terms & cond.", 0], ["ATC fired", 40], ["Checkout", 3], ["Confirmed", 150]], "TOTAL": [["ATC click", 917], ["Booker details", 740], ["Player details", 629], ["Travel arrange.", 623], ["Terms & cond.", 0], ["ATC fired", 758], ["Checkout", 561], ["Confirmed", 588]]}, "Q1 2026": {"Direct": [["ATC click", 1077], ["Booker details", 368], ["Player details", 314], ["Travel arrange.", 313], ["Terms & cond.", 146], ["ATC fired", 308], ["Checkout", 301], ["Confirmed", 240]], "Paid Search": [["ATC click", 770], ["Booker details", 131], ["Player details", 105], ["Travel arrange.", 103], ["Terms & cond.", 47], ["ATC fired", 97], ["Checkout", 93], ["Confirmed", 86]], "Organic Search": [["ATC click", 707], ["Booker details", 154], ["Player details", 121], ["Travel arrange.", 117], ["Terms & cond.", 58], ["ATC fired", 107], ["Checkout", 135], ["Confirmed", 93]], "Email": [["ATC click", 314], ["Booker details", 108], ["Player details", 78], ["Travel arrange.", 77], ["Terms & cond.", 32], ["ATC fired", 68], ["Checkout", 83], ["Confirmed", 70]], "Paid Social": [["ATC click", 701], ["Booker details", 74], ["Player details", 48], ["Travel arrange.", 47], ["Terms & cond.", 14], ["ATC fired", 42], ["Checkout", 48], ["Confirmed", 17]], "Referral": [["ATC click", 270], ["Booker details", 92], ["Player details", 78], ["Travel arrange.", 76], ["Terms & cond.", 46], ["ATC fired", 74], ["Checkout", 84], ["Confirmed", 56]], "Organic Social": [["ATC click", 12], ["Booker details", 3], ["Player details", 3], ["Travel arrange.", 3], ["Terms & cond.", 1], ["ATC fired", 1], ["Checkout", 0], ["Confirmed", 0]], "Cross-network": [["ATC click", 545], ["Booker details", 32], ["Player details", 26], ["Travel arrange.", 25], ["Terms & cond.", 12], ["ATC fired", 23], ["Checkout", 25], ["Confirmed", 19]], "Unassigned": [["ATC click", 99], ["Booker details", 35], ["Player details", 26], ["Travel arrange.", 27], ["Terms & cond.", 13], ["ATC fired", 20], ["Checkout", 35], ["Confirmed", 23]], "TOTAL": [["ATC click", 4495], ["Booker details", 997], ["Player details", 799], ["Travel arrange.", 788], ["Terms & cond.", 369], ["ATC fired", 740], ["Checkout", 804], ["Confirmed", 604]]}}, "LFC": {"channels": ["Direct", "Paid Search", "Organic Search", "Email", "Paid Social", "Referral", "Organic Social", "Unassigned", "TOTAL"], "Q1 2025": {"Direct": [["ATC click", 144], ["Booker details", 121], ["Player details", 102], ["Travel arrange.", 99], ["Terms & cond.", 0], ["ATC fired", 171], ["Checkout", 90], ["Confirmed", 170]], "Paid Search": [["ATC click", 119], ["Booker details", 66], ["Player details", 54], ["Travel arrange.", 56], ["Terms & cond.", 0], ["ATC fired", 217], ["Checkout", 32], ["Confirmed", 63]], "Organic Search": [["ATC click", 176], ["Booker details", 128], ["Player details", 113], ["Travel arrange.", 110], ["Terms & cond.", 0], ["ATC fired", 158], ["Checkout", 103], ["Confirmed", 111]], "Email": [["ATC click", 32], ["Booker details", 29], ["Player details", 19], ["Travel arrange.", 18], ["Terms & cond.", 0], ["ATC fired", 36], ["Checkout", 16], ["Confirmed", 27]], "Paid Social": [["ATC click", 161], ["Booker details", 33], ["Player details", 27], ["Travel arrange.", 26], ["Terms & cond.", 0], ["ATC fired", 49], ["Checkout", 14], ["Confirmed", 22]], "Referral": [["ATC click", 24], ["Booker details", 23], ["Player details", 15], ["Travel arrange.", 15], ["Terms & cond.", 0], ["ATC fired", 46], ["Checkout", 8], ["Confirmed", 4]], "Organic Social": [["ATC click", 50], ["Booker details", 20], ["Player details", 18], ["Travel arrange.", 18], ["Terms & cond.", 0], ["ATC fired", 26], ["Checkout", 12], ["Confirmed", 16]], "Unassigned": [["ATC click", 16], ["Booker details", 6], ["Player details", 2], ["Travel arrange.", 2], ["Terms & cond.", 0], ["ATC fired", 2], ["Checkout", 8], ["Confirmed", 14]], "TOTAL": [["ATC click", 722], ["Booker details", 426], ["Player details", 350], ["Travel arrange.", 344], ["Terms & cond.", 0], ["ATC fired", 705], ["Checkout", 283], ["Confirmed", 427]]}, "Q1 2026": {"Direct": [["ATC click", 410], ["Booker details", 125], ["Player details", 98], ["Travel arrange.", 91], ["Terms & cond.", 1], ["ATC fired", 100], ["Checkout", 83], ["Confirmed", 104]], "Paid Search": [["ATC click", 219], ["Booker details", 40], ["Player details", 32], ["Travel arrange.", 32], ["Terms & cond.", 0], ["ATC fired", 26], ["Checkout", 23], ["Confirmed", 29]], "Organic Search": [["ATC click", 145], ["Booker details", 37], ["Player details", 28], ["Travel arrange.", 28], ["Terms & cond.", 0], ["ATC fired", 22], ["Checkout", 35], ["Confirmed", 17]], "Email": [["ATC click", 81], ["Booker details", 30], ["Player details", 30], ["Travel arrange.", 28], ["Terms & cond.", 0], ["ATC fired", 24], ["Checkout", 25], ["Confirmed", 26]], "Paid Social": [["ATC click", 526], ["Booker details", 71], ["Player details", 56], ["Travel arrange.", 54], ["Terms & cond.", 0], ["ATC fired", 55], ["Checkout", 20], ["Confirmed", 8]], "Referral": [["ATC click", 34], ["Booker details", 14], ["Player details", 13], ["Travel arrange.", 9], ["Terms & cond.", 0], ["ATC fired", 13], ["Checkout", 17], ["Confirmed", 20]], "Organic Social": [["ATC click", 36], ["Booker details", 8], ["Player details", 6], ["Travel arrange.", 6], ["Terms & cond.", 0], ["ATC fired", 5], ["Checkout", 1], ["Confirmed", 2]], "Unassigned": [["ATC click", 124], ["Booker details", 36], ["Player details", 33], ["Travel arrange.", 32], ["Terms & cond.", 0], ["ATC fired", 28], ["Checkout", 19], ["Confirmed", 21]], "TOTAL": [["ATC click", 1575], ["Booker details", 361], ["Player details", 296], ["Travel arrange.", 280], ["Terms & cond.", 1], ["ATC fired", 273], ["Checkout", 223], ["Confirmed", 227]]}}};
-
+ 
+const TRAFFIC = {"ESC":{"Q1 2025":{"Paid Social":{"sessions":23286,"users":12939},"Direct":{"sessions":11955,"users":6031},"Paid Search":{"sessions":11565,"users":6614},"Unassigned":{"sessions":8552,"users":6836},"Organic Search":{"sessions":8128,"users":3884},"Email":{"sessions":3138,"users":1561},"Cross-network":{"sessions":2936,"users":1834},"Organic Social":{"sessions":1680,"users":1297},"Referral":{"sessions":1436,"users":679},"TOTAL":{"sessions":72692,"users":41681}},"Q1 2026":{"Cross-network":{"sessions":54477,"users":49566},"Paid Social":{"sessions":32364,"users":26597},"Direct":{"sessions":16636,"users":11404},"Paid Search":{"sessions":12178,"users":9010},"Organic Search":{"sessions":11123,"users":7713},"Email":{"sessions":7324,"users":5007},"Referral":{"sessions":4044,"users":2459},"Unassigned":{"sessions":3137,"users":2898},"Organic Social":{"sessions":1127,"users":1029},"TOTAL":{"sessions":142422,"users":115689}}},"LFC":{"Q1 2025":{"Paid Social":{"sessions":18411,"users":16291},"Direct":{"sessions":9547,"users":6742},"Paid Search":{"sessions":6651,"users":5236},"Organic Search":{"sessions":6121,"users":4103},"Organic Social":{"sessions":5857,"users":5433},"Email":{"sessions":1936,"users":1245},"Referral":{"sessions":1664,"users":1256},"Unassigned":{"sessions":456,"users":366},"TOTAL":{"sessions":50648,"users":40677}},"Q1 2026":{"Paid Social":{"sessions":20781,"users":17580},"Direct":{"sessions":8977,"users":5738},"Paid Search":{"sessions":5393,"users":4423},"Unassigned":{"sessions":5347,"users":4980},"Organic Search":{"sessions":2804,"users":1865},"Email":{"sessions":1840,"users":1077},"Organic Social":{"sessions":1692,"users":1582},"Referral":{"sessions":724,"users":456},"TOTAL":{"sessions":47606,"users":37745}}}};
+ 
 let currentProp = 'ESC';
-
-function setprop_lfc() { setprop('LFC'); }
+ 
 function setprop(p) {
   currentProp = p;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active-esc','active-lfc'));
@@ -99,11 +104,7 @@ function setprop(p) {
   buildChannelFilter();
   render();
 }
-function setprop_bind() {
-  document.querySelectorAll('.tab')[0].onclick = () => setprop('ESC');
-  document.querySelectorAll('.tab')[1].onclick = () => setprop('LFC');
-}
-
+ 
 function buildChannelFilter() {
   const sel = document.getElementById('channelFilter');
   const channels = DATA[currentProp].channels;
@@ -114,46 +115,51 @@ function buildChannelFilter() {
     sel.appendChild(opt);
   });
 }
-
+ 
 function barColor(pct, isProp) {
-  // pct = % of ATC click
   if (pct >= 70) return isProp === 'ESC' ? '#1B4F8A' : '#C8102E';
   if (pct >= 40) return '#2E86AB';
   if (pct >= 20) return '#D68910';
   return '#C0392B';
 }
-
+ 
 function dropColor(ratio) {
   if (ratio >= 0.85) return '#1E7B4B';
   if (ratio >= 0.60) return '#D68910';
   return '#C0392B';
 }
-
-function fmtN(n) { return n >= 1000 ? (n/1000).toFixed(1)+'k' : n; }
+ 
+function fmtN(n) {
+  if (!n && n !== 0) return '—';
+  return n >= 10000 ? Math.round(n/1000)+'k' : n >= 1000 ? (n/1000).toFixed(1)+'k' : n;
+}
 function pct(a,b) { return b ? Math.round(a/b*100) : 0; }
-
+function delta(a,b) { return b ? Math.round((a-b)/b*100) : 0; }
+function deltaClass(d, threshold) {
+  threshold = threshold || 5;
+  return d > threshold ? 'up' : d < -threshold ? 'down' : 'flat';
+}
+ 
 function buildPeriodHTML(steps, propColor, showTnC) {
   const top = steps[0][1] || 1;
   let html = '';
   for (let i = 0; i < steps.length; i++) {
     const [name, cnt] = steps[i];
     if (name === 'Terms & cond.' && !showTnC) continue;
-
+ 
     const pctOfTop = pct(cnt, top);
-    const prev = i > 0 ? steps[i-1][1] : null;
-    // find actual previous non-zero for drop calc
     let prevVal = null;
     for (let j = i-1; j >= 0; j--) {
       if (steps[j][1] > 0) { prevVal = steps[j][1]; break; }
     }
     const dropPct = (prevVal && i > 0) ? pct(cnt, prevVal) : 100;
     const dropCls = i === 0 ? '' : (dropPct >= 85 ? 'up' : dropPct >= 60 ? 'flat' : 'down');
-
+ 
     const isConfirmed = name === 'Confirmed';
     const fillColor = isConfirmed
-      ? (propColor === '#1B4F8A' ? '#1E7B4B' : '#1E7B4B')
+      ? '#1E7B4B'
       : (i === 0 ? '#aaa' : barColor(pctOfTop, currentProp));
-
+ 
     html += `<div class="step-row">
       <div class="step-name">
         <span>${name}</span>
@@ -163,72 +169,113 @@ function buildPeriodHTML(steps, propColor, showTnC) {
         <div class="bar-fill" style="width:${Math.min(pctOfTop,100)}%;background:${fillColor}"></div>
       </div>
       <div class="pct-label" style="display:flex;justify-content:space-between">
-        <span>${pctOfTop}% of ATC click</span>
-        ${i > 0 ? `<span class="${dropCls}" style="font-size:10px">${dropPct}% of prev step</span>` : ''}
+        <span>${pctOfTop}% of ATC</span>
+        ${i > 0 ? `<span class="${dropCls}" style="font-size:10px">${dropPct}% of prev</span>` : ''}
       </div>
     </div>`;
   }
   return html;
 }
-
+ 
 function render() {
   const sel = document.getElementById('channelFilter').value;
   const channels = sel === 'ALL' ? DATA[currentProp].channels : [sel];
   const propColor = currentProp === 'ESC' ? '#1B4F8A' : '#C8102E';
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
-
+ 
   channels.forEach(ch => {
     const s25 = DATA[currentProp]['Q1 2025'][ch] || [];
     const s26 = DATA[currentProp]['Q1 2026'][ch] || [];
     if (!s25.length && !s26.length) return;
-
+ 
     const atc25 = s25[0]?.[1] || 0;
     const atc26 = s26[0]?.[1] || 0;
     const conf25 = s25[7]?.[1] || 0;
     const conf26 = s26[7]?.[1] || 0;
     const booker25 = s25[1]?.[1] || 0;
     const booker26 = s26[1]?.[1] || 0;
-
-    const atcDelta = atc25 ? Math.round((atc26-atc25)/atc25*100) : 0;
-    const confDelta = conf25 ? Math.round((conf26-conf25)/conf25*100) : 0;
+ 
+    // Traffic / sessions
+    const t25 = (TRAFFIC[currentProp]?.['Q1 2025']?.[ch]) || null;
+    const t26 = (TRAFFIC[currentProp]?.['Q1 2026']?.[ch]) || null;
+    const sess25 = t25?.sessions || 0;
+    const sess26 = t26?.sessions || 0;
+ 
+    const sessDelta  = delta(sess26, sess25);
+    const atcDelta   = delta(atc26, atc25);
+    const confDelta  = delta(conf26, conf25);
+ 
     const bookerPct25 = pct(booker25, atc25);
     const bookerPct26 = pct(booker26, atc26);
-
+ 
+    // ATC entry rate = ATC clicks / sessions
+    const atcRate25 = sess25 ? +(atc25 / sess25 * 100).toFixed(1) : null;
+    const atcRate26 = sess26 ? +(atc26 / sess26 * 100).toFixed(1) : null;
+ 
     const showTnC25 = s25.some(([n,v]) => n === 'Terms & cond.' && v > 0);
     const showTnC26 = s26.some(([n,v]) => n === 'Terms & cond.' && v > 0);
-
+ 
     const isTotal = ch === 'TOTAL';
-    const cardBorderColor = isTotal ? propColor : '#e8e8e8';
-
-    const confDeltaClass = confDelta > 5 ? 'up' : confDelta < -5 ? 'down' : 'flat';
-    const atcDeltaClass  = atcDelta  > 5 ? 'up' : atcDelta  < -5 ? 'flat' : 'flat';
-
+ 
+    const sessDeltaCls = deltaClass(sessDelta);
+    const atcDeltaCls  = atcDelta > 5 ? 'up' : atcDelta < -5 ? 'flat' : 'flat';
+    const confDeltaCls = deltaClass(confDelta);
+ 
+    // ATC rate direction: higher is better
+    const atcRateDir = atcRate25 !== null && atcRate26 !== null
+      ? (atcRate26 > atcRate25 + 0.5 ? 'up' : atcRate26 < atcRate25 - 0.5 ? 'down' : 'flat')
+      : 'flat';
+ 
+    // Tiny bar for ATC rate (cap visual at 20%)
+    const rateBarMax = 20;
+    const rateBar25 = atcRate25 !== null ? Math.min(atcRate25 / rateBarMax * 100, 100) : 0;
+    const rateBar26 = atcRate26 !== null ? Math.min(atcRate26 / rateBarMax * 100, 100) : 0;
+ 
     const card = document.createElement('div');
     card.className = 'channel-card' + (isTotal ? ' total-card' : '');
     card.style.borderColor = isTotal ? propColor : '#e8e8e8';
-
+ 
+    const hasTraffic = sess25 > 0 || sess26 > 0;
+ 
+    const sessionCell = hasTraffic ? `
+        <div class="summary-cell highlight">
+          <div class="sv">${fmtN(sess25)} → ${fmtN(sess26)}</div>
+          <div class="sl">Sessions &nbsp;<span class="${sessDeltaCls}">${sessDelta>0?'+':''}${sessDelta}%</span></div>
+        </div>
+        <div class="summary-cell highlight">
+          <div class="sv ${atcRateDir}">${atcRate25 !== null ? atcRate25+'%' : '—'} → ${atcRate26 !== null ? atcRate26+'%' : '—'}</div>
+          <div class="sl">ATC entry rate</div>
+          <div class="atc-rate-bar" style="margin-top:4px">
+            <div style="display:flex;gap:2px;height:3px">
+              <div style="flex:1;background:#ddd;border-radius:2px;overflow:hidden"><div style="width:${rateBar25}%;height:100%;background:#aaa;border-radius:2px"></div></div>
+              <div style="flex:1;background:#ddd;border-radius:2px;overflow:hidden"><div style="width:${rateBar26}%;height:100%;background:${propColor};border-radius:2px"></div></div>
+            </div>
+          </div>
+        </div>` : '';
+ 
     card.innerHTML = `
       <div class="card-header" style="background:${propColor}">
         <span>${ch}</span>
-        <span class="subtitle">Booker%: ${bookerPct25}% → ${bookerPct26}%</span>
+        <span class="subtitle">ATC→Booker: ${bookerPct25}% → ${bookerPct26}%</span>
       </div>
-
+ 
       <div class="summary-strip">
+        ${sessionCell}
         <div class="summary-cell">
           <div class="sv">${atc25.toLocaleString()} → ${atc26.toLocaleString()}</div>
-          <div class="sl">ATC clicks &nbsp;<span class="${atcDeltaClass}">${atcDelta>0?'+':''}${atcDelta}%</span></div>
+          <div class="sl">ATC clicks &nbsp;<span class="${atcDeltaCls}">${atcDelta>0?'+':''}${atcDelta}%</span></div>
         </div>
         <div class="summary-cell">
           <div class="sv">${bookerPct25}% → ${bookerPct26}%</div>
-          <div class="sl">ATC→Booker open rate</div>
+          <div class="sl">ATC→Booker open</div>
         </div>
         <div class="summary-cell">
           <div class="sv">${conf25.toLocaleString()} → ${conf26.toLocaleString()}</div>
-          <div class="sl">Confirmed &nbsp;<span class="${confDeltaClass}">${confDelta>0?'+':''}${confDelta}%</span></div>
+          <div class="sl">Confirmed &nbsp;<span class="${confDeltaCls}">${confDelta>0?'+':''}${confDelta}%</span></div>
         </div>
       </div>
-
+ 
       <div class="funnel-wrap">
         <div class="period-cols">
           <div>
@@ -241,19 +288,19 @@ function render() {
           </div>
         </div>
       </div>
-
+ 
       <div class="legend">
         <span><span class="legend-dot" style="background:#1E7B4B"></span> ≥85% retained</span>
         <span><span class="legend-dot" style="background:#D68910"></span> 60–84%</span>
         <span><span class="legend-dot" style="background:#C0392B"></span> &lt;60% — drop</span>
+        ${hasTraffic ? '<span style="margin-left:auto;color:#888">Highlighted cells = GA4 session data</span>' : ''}
       </div>
     `;
     grid.appendChild(card);
   });
 }
-
+ 
 // init
-setprop_bind();
 buildChannelFilter();
 render();
 </script>
