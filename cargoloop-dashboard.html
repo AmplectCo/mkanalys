@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CargoLoop — Digital Marketing Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #fff; color: #1a1a1a; font-size: 13px; padding: 24px 32px; }
+
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 2px; }
+  .subtitle { font-size: 11px; color: #888; margin-bottom: 16px; }
+
+  /* Filters */
+  .filters { display: flex; gap: 24px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
+  .filter-group { display: flex; align-items: center; gap: 4px; }
+  .filter-label { font-size: 10px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; }
+  .filter-btn { padding: 4px 10px; border: 1px solid #e0e0e0; background: #fff; border-radius: 4px; font-size: 12px; cursor: pointer; transition: all 0.15s; }
+  .filter-btn:hover { border-color: #999; }
+  .filter-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+  /* KPI Cards */
+  .kpi-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .kpi-card { border: 1px solid #e8e8e8; border-radius: 6px; padding: 12px 14px; min-width: 120px; flex: 1; }
+  .kpi-label { font-size: 10px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px; }
+  .kpi-value { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .kpi-change { font-size: 11px; font-weight: 600; }
+  .kpi-change.up { color: #22a355; }
+  .kpi-change.down { color: #e53935; }
+  .kpi-vs { font-size: 10px; color: #aaa; }
+
+  /* Section headers */
+  .section-title { font-size: 15px; font-weight: 700; margin: 28px 0 12px 0; }
+  .section-subtitle { font-size: 11px; color: #888; margin: -8px 0 12px 0; }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; margin-bottom: 24px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { font-size: 10px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.3px; padding: 8px 10px; text-align: right; border-bottom: 2px solid #eee; white-space: nowrap; }
+  th:first-child { text-align: left; }
+  th.group-header { text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 11px; color: #555; }
+  td { padding: 7px 10px; text-align: right; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
+  td:first-child { text-align: left; font-weight: 600; }
+  tr:last-child td { border-bottom: 2px solid #ddd; font-weight: 700; }
+  tr:hover { background: #fafafa; }
+  .change-up { color: #22a355; font-weight: 600; }
+  .change-down { color: #e53935; font-weight: 600; }
+
+  /* Charts */
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .chart-box { border: 1px solid #e8e8e8; border-radius: 6px; padding: 16px; }
+  .chart-box h3 { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 12px; }
+  .bar-chart { display: flex; align-items: flex-end; gap: 3px; height: 120px; }
+  .bar-group { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }
+  .bar { width: 100%; min-width: 16px; max-width: 36px; border-radius: 3px 3px 0 0; transition: height 0.3s; position: relative; }
+  .bar:hover { opacity: 0.8; }
+  .bar-label { font-size: 9px; color: #aaa; margin-top: 4px; white-space: nowrap; }
+  .bar-val { font-size: 9px; color: #555; margin-bottom: 2px; font-weight: 600; white-space: nowrap; }
+
+  /* Trend table */
+  .trend-table td, .trend-table th { padding: 5px 8px; font-size: 11px; }
+
+  .legend { display: flex; gap: 16px; margin-bottom: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #666; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+  @media (max-width: 900px) {
+    .chart-grid { grid-template-columns: 1fr; }
+    .kpi-card { min-width: 100px; }
+    body { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>CargoLoop — Digital Marketing Dashboard</h1>
+<div class="subtitle">BigQuery GA4 + Meta Ads + Google Ads + GSC · Finalized data · Generated Apr 6, 2026</div>
+
+<!-- Filters (GA4 section) -->
+<div class="filters">
+  <div class="filter-group">
+    <span class="filter-label">GA4 Period</span>
+    <button class="filter-btn active" data-filter="period" data-value="all">All (Feb–Apr)</button>
+    <button class="filter-btn" data-filter="period" data-value="Feb">Feb</button>
+    <button class="filter-btn" data-filter="period" data-value="Mar">Mar</button>
+    <button class="filter-btn" data-filter="period" data-value="Apr">Apr 1-5</button>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Compare</span>
+    <button class="filter-btn active" data-filter="compare" data-value="mom">MoM</button>
+    <button class="filter-btn" data-filter="compare" data-value="none">Off</button>
+  </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="kpi-row" id="kpi-row-1"></div>
+<div class="kpi-row" id="kpi-row-2"></div>
+
+<!-- Channel Performance -->
+<div class="section-title">Channel Performance</div>
+<div class="table-wrap" id="channel-table-wrap"></div>
+
+<!-- Site Sections -->
+<div class="section-title">Site Sections</div>
+<div class="table-wrap" id="sections-table-wrap"></div>
+
+<!-- ============================================================ -->
+<!-- HISTORICAL TRENDS -->
+<!-- ============================================================ -->
+<div class="section-title">Meta Ads — Monthly Trend</div>
+<div class="section-subtitle">Nov 2024 — Apr 2026 · Source: Meta_ads BigQuery dataset</div>
+<div class="chart-grid">
+  <div class="chart-box"><h3>Ad Spend (USD)</h3><div class="bar-chart" id="chart-meta-spend"></div></div>
+  <div class="chart-box"><h3>Leads (from Meta)</h3><div class="bar-chart" id="chart-meta-leads"></div></div>
+  <div class="chart-box"><h3>Cost per Lead (USD)</h3><div class="bar-chart" id="chart-meta-cpl"></div></div>
+  <div class="chart-box"><h3>Impressions</h3><div class="bar-chart" id="chart-meta-impr"></div></div>
+</div>
+<div class="table-wrap" id="meta-trend-table"></div>
+
+<div class="section-title">Google Search Console — Monthly Trend</div>
+<div class="section-subtitle">Oct 2025 — Apr 2026 · Source: searchconsole BigQuery dataset</div>
+<div class="chart-grid">
+  <div class="chart-box"><h3>GSC Clicks</h3><div class="bar-chart" id="chart-gsc-clicks"></div></div>
+  <div class="chart-box"><h3>GSC Impressions</h3><div class="bar-chart" id="chart-gsc-impr"></div></div>
+</div>
+<div class="table-wrap" id="gsc-trend-table"></div>
+
+<div class="section-title">Google Ads — Monthly Trend</div>
+<div class="section-subtitle">Feb — Mar 2026 · Source: CargoLoop_GoogleAds BigQuery dataset</div>
+<div class="table-wrap" id="gads-trend-table"></div>
+
+<script>
+// ============================================================
+// GA4 DATA (Feb–Apr 2026)
+// ============================================================
+const GA4 = {
+  kpis: {
+    Feb: {sessions:98877,active_users:17408,new_users:36356,pageviews:244389,engaged_sessions:61486,total_eng_time_ms:1571414899,form_submits:50285,quote_submits:196,phone_clicks:34,form_starts:64774,search_clicks:60701},
+    Mar: {sessions:128129,active_users:16556,new_users:55202,pageviews:329972,engaged_sessions:84758,total_eng_time_ms:2027912941,form_submits:72791,quote_submits:163,phone_clicks:126,form_starts:91830,search_clicks:85974},
+    Apr: {sessions:20393,active_users:5933,new_users:7000,pageviews:50426,engaged_sessions:12427,total_eng_time_ms:325235478,form_submits:10546,quote_submits:34,phone_clicks:12,form_starts:13245,search_clicks:12770}
+  },
+  channels: {
+    Feb: [
+      {channel:"Direct",sessions:84720,form_submits:22415,quote_submits:36,phone_clicks:8,total_leads:22459},
+      {channel:"Organic",sessions:8521,form_submits:3002,quote_submits:28,phone_clicks:8,total_leads:3038},
+      {channel:"Paid Social",sessions:3756,form_submits:4,quote_submits:89,phone_clicks:7,total_leads:100},
+      {channel:"Referral",sessions:1430,form_submits:535,quote_submits:6,phone_clicks:2,total_leads:543},
+      {channel:"Paid Search",sessions:324,form_submits:10,quote_submits:8,phone_clicks:1,total_leads:19},
+      {channel:"Other",sessions:127,form_submits:1,quote_submits:3,phone_clicks:0,total_leads:4}
+    ],
+    Mar: [
+      {channel:"Direct",sessions:115415,form_submits:31556,quote_submits:36,phone_clicks:21,total_leads:31613},
+      {channel:"Organic",sessions:9535,form_submits:2947,quote_submits:10,phone_clicks:18,total_leads:2975},
+      {channel:"Referral",sessions:1620,form_submits:599,quote_submits:11,phone_clicks:0,total_leads:610},
+      {channel:"Paid Social",sessions:1483,form_submits:4,quote_submits:33,phone_clicks:3,total_leads:40},
+      {channel:"Other",sessions:42,form_submits:2,quote_submits:10,phone_clicks:1,total_leads:13},
+      {channel:"Paid Search",sessions:35,form_submits:1,quote_submits:7,phone_clicks:0,total_leads:8}
+    ],
+    Apr: [
+      {channel:"Direct",sessions:17819,form_submits:4628,quote_submits:6,phone_clicks:3,total_leads:4637},
+      {channel:"Organic",sessions:1543,form_submits:467,quote_submits:6,phone_clicks:7,total_leads:480},
+      {channel:"Paid Social",sessions:643,form_submits:2,quote_submits:14,phone_clicks:1,total_leads:17},
+      {channel:"Referral",sessions:377,form_submits:134,quote_submits:1,phone_clicks:0,total_leads:135},
+      {channel:"Other",sessions:8,form_submits:2,quote_submits:1,phone_clicks:0,total_leads:3},
+      {channel:"Paid Search",sessions:4,form_submits:1,quote_submits:2,phone_clicks:0,total_leads:3}
+    ]
+  },
+  sections: {
+    Feb: [
+      {section:"Search",pageviews:185630,sessions:77760},{section:"Homepage",pageviews:46519,sessions:31577},{section:"Int. Transportation",pageviews:3090,sessions:2011},{section:"Get a Quote",pageviews:2070,sessions:1481},{section:"Contact",pageviews:1065,sessions:748},{section:"PL Pages",pageviews:564,sessions:293},{section:"Auto Auction",pageviews:468,sessions:332},{section:"UA Pages",pageviews:343,sessions:220},{section:"Company",pageviews:275,sessions:211},{section:"Other",pageviews:258,sessions:151},{section:"Insurance",pageviews:136,sessions:106},{section:"Dom. Transportation",pageviews:134,sessions:94},{section:"Thank You",pageviews:127,sessions:110},{section:"FAQ",pageviews:114,sessions:88},{section:"ES Pages",pageviews:53,sessions:25}
+    ],
+    Mar: [
+      {section:"Search",pageviews:257893,sessions:105974},{section:"Homepage",pageviews:61438,sessions:39975},{section:"Int. Transportation",pageviews:2664,sessions:1607},{section:"Get a Quote",pageviews:2658,sessions:1641},{section:"Contact",pageviews:1107,sessions:694},{section:"ES Pages",pageviews:700,sessions:180},{section:"PL Pages",pageviews:663,sessions:316},{section:"UA Pages",pageviews:454,sessions:289},{section:"Auto Auction",pageviews:420,sessions:246},{section:"Other",pageviews:293,sessions:164},{section:"Company",pageviews:285,sessions:181},{section:"Insurance",pageviews:181,sessions:143},{section:"Thank You",pageviews:149,sessions:101},{section:"Dom. Transportation",pageviews:122,sessions:80},{section:"FAQ",pageviews:105,sessions:67}
+    ],
+    Apr: [
+      {section:"Search",pageviews:39384,sessions:16644},{section:"Homepage",pageviews:9154,sessions:6252},{section:"Int. Transportation",pageviews:624,sessions:481},{section:"Get a Quote",pageviews:454,sessions:328},{section:"ES Pages",pageviews:158,sessions:132},{section:"Contact",pageviews:148,sessions:101},{section:"PL Pages",pageviews:107,sessions:54},{section:"UA Pages",pageviews:69,sessions:53},{section:"Auto Auction",pageviews:58,sessions:44},{section:"Insurance",pageviews:34,sessions:29},{section:"Other",pageviews:32,sessions:21},{section:"Company",pageviews:32,sessions:21},{section:"Thank You",pageviews:28,sessions:21},{section:"Dom. Transportation",pageviews:17,sessions:12},{section:"FAQ",pageviews:16,sessions:6}
+    ]
+  }
+};
+
+// ============================================================
+// HISTORICAL DATA
+// ============================================================
+const META_MONTHLY = [
+  {month:"2024-11",cost_usd:69.89,impressions:22393,clicks:267,leads:5,link_clicks:119,landing_page_views:59,reach:18323},
+  {month:"2024-12",cost_usd:310.93,impressions:126778,clicks:1514,leads:59,link_clicks:718,landing_page_views:355,reach:97686},
+  {month:"2025-01",cost_usd:466.23,impressions:136601,clicks:3192,leads:107,link_clicks:2508,landing_page_views:1136,reach:105597},
+  {month:"2025-02",cost_usd:838.62,impressions:288948,clicks:5690,leads:603,link_clicks:4056,landing_page_views:1596,reach:215699},
+  {month:"2025-03",cost_usd:836.17,impressions:258460,clicks:3049,leads:69,link_clicks:1372,landing_page_views:505,reach:172710},
+  {month:"2025-04",cost_usd:810.77,impressions:277596,clicks:2766,leads:40,link_clicks:1044,landing_page_views:557,reach:189815},
+  {month:"2025-05",cost_usd:1146.92,impressions:446908,clicks:3762,leads:65,link_clicks:1633,landing_page_views:834,reach:313306},
+  {month:"2025-06",cost_usd:1415.08,impressions:552784,clicks:7588,leads:125,link_clicks:2852,landing_page_views:1369,reach:400089},
+  {month:"2025-07",cost_usd:2092.99,impressions:886968,clicks:15443,leads:329,link_clicks:7356,landing_page_views:3763,reach:714526},
+  {month:"2025-08",cost_usd:3318.83,impressions:1373929,clicks:28040,leads:503,link_clicks:15196,landing_page_views:6564,reach:1122576},
+  {month:"2025-09",cost_usd:3292.43,impressions:903673,clicks:21819,leads:311,link_clicks:16641,landing_page_views:8949,reach:709248},
+  {month:"2025-10",cost_usd:2666.63,impressions:706586,clicks:16362,leads:234,link_clicks:12879,landing_page_views:6220,reach:531282},
+  {month:"2025-11",cost_usd:2567.46,impressions:695932,clicks:11219,leads:172,link_clicks:6217,landing_page_views:3222,reach:537053},
+  {month:"2025-12",cost_usd:3011.13,impressions:659359,clicks:11611,leads:136,link_clicks:7096,landing_page_views:3467,reach:493543},
+  {month:"2026-01",cost_usd:2630.58,impressions:1131192,clicks:15008,leads:164,link_clicks:8146,landing_page_views:3958,reach:866120},
+  {month:"2026-02",cost_usd:3617.25,impressions:1316424,clicks:13584,leads:139,link_clicks:8048,landing_page_views:3960,reach:1009164},
+  {month:"2026-03",cost_usd:1772.21,impressions:619981,clicks:5479,leads:53,link_clicks:3094,landing_page_views:1112,reach:438613},
+  {month:"2026-04",cost_usd:500.37,impressions:235447,clicks:2134,leads:19,link_clicks:1153,landing_page_views:443,reach:178656}
+];
+
+const GSC_MONTHLY = [
+  {month:"2025-10",impressions:120843,clicks:8931,ctr_pct:7.39},
+  {month:"2025-11",impressions:116769,clicks:9035,ctr_pct:7.74},
+  {month:"2025-12",impressions:46603,clicks:2618,ctr_pct:5.62},
+  {month:"2026-01",impressions:179223,clicks:11287,ctr_pct:6.30},
+  {month:"2026-02",impressions:144117,clicks:11928,ctr_pct:8.28},
+  {month:"2026-03",impressions:118958,clicks:12086,ctr_pct:10.16},
+  {month:"2026-04",impressions:14628,clicks:1480,ctr_pct:10.12}
+];
+
+const GADS_MONTHLY = [
+  {month:"2026-02",clicks:499,impressions:4769,cost_usd:637.09,conversions:4},
+  {month:"2026-03",clicks:125,impressions:1087,cost_usd:188.87,conversions:1}
+];
+
+// ============================================================
+// STATE & HELPERS
+// ============================================================
+let state = { period: 'all', compare: 'mom' };
+
+function fmt(n) { return n == null ? '—' : typeof n === 'string' ? n : n.toLocaleString('en-US'); }
+function fmtPct(n) { return n == null || !isFinite(n) ? '—' : n.toFixed(1) + '%'; }
+function fmtMoney(n) { return n == null ? '—' : '$' + n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtTime(ms) { const s = Math.round(ms/1000); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
+function shortMonth(m) { return m.replace('2024-','').replace('2025-','').replace('2026-','\'26-').replace('2025-','\'25-'); }
+function labelMonth(m) {
+  const [y,mm] = m.split('-');
+  const names = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return names[parseInt(mm)] + ' ' + y.slice(2);
+}
+
+function changeHtml(cur, prev) {
+  if (!prev || prev === 0) return '<span class="kpi-change">—</span>';
+  const pct = ((cur - prev) / Math.abs(prev)) * 100;
+  const cls = pct >= 0 ? 'up' : 'down';
+  return `<span class="kpi-change ${cls}">${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%</span>`;
+}
+function changeTd(cur, prev) {
+  if (!prev || prev === 0) return '<td>—</td>';
+  const pct = ((cur - prev) / Math.abs(prev)) * 100;
+  const cls = pct >= 0 ? 'change-up' : 'change-down';
+  return `<td class="${cls}">${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%</td>`;
+}
+
+function sumObj(data, periods) {
+  const result = {};
+  const keys = Object.keys(data.Feb || data.Mar || {});
+  keys.forEach(k => result[k] = 0);
+  periods.forEach(p => { if(data[p]) keys.forEach(k => result[k] += data[p][k]); });
+  return result;
+}
+function sumList(data, periods) {
+  const map = {};
+  periods.forEach(p => {
+    if(!data[p]) return;
+    data[p].forEach(c => {
+      const key = c.channel || c.section;
+      if(!map[key]) { map[key] = {...c}; }
+      else { Object.keys(c).forEach(k => { if(typeof c[k]==='number') map[key][k]+=c[k]; }); }
+    });
+  });
+  return Object.values(map).sort((a,b) => b.sessions - a.sessions);
+}
+
+function getPeriods() { return state.period === 'all' ? ['Feb','Mar','Apr'] : [state.period]; }
+function getComparePeriods() {
+  if(state.compare !== 'mom') return null;
+  if(state.period === 'Mar') return ['Feb'];
+  if(state.period === 'Apr') return ['Mar'];
+  return null;
+}
+
+function kpiCard(label, value, ch, vs) {
+  return `<div class="kpi-card"><div class="kpi-label">${label}</div><div class="kpi-value">${value}</div>${ch||''}${vs?`<div class="kpi-vs">${vs}</div>`:''}</div>`;
+}
+
+// ============================================================
+// BAR CHART RENDERER
+// ============================================================
+function renderBarChart(containerId, data, valueKey, color, formatter) {
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const vals = data.map(d => {
+    if(valueKey === '_cpl') return d.leads > 0 ? d.cost_usd / d.leads : 0;
+    return d[valueKey] || 0;
+  });
+  const max = Math.max(...vals, 1);
+
+  el.innerHTML = data.map((d, i) => {
+    const h = Math.max(2, (vals[i] / max) * 100);
+    const label = labelMonth(d.month);
+    const val = formatter ? formatter(vals[i]) : fmt(Math.round(vals[i]));
+    return `<div class="bar-group"><div class="bar-val">${val}</div><div class="bar" style="height:${h}%;background:${color}" title="${label}: ${val}"></div><div class="bar-label">${label}</div></div>`;
+  }).join('');
+}
+
+// ============================================================
+// RENDER GA4 SECTION
+// ============================================================
+function renderGA4() {
+  const periods = getPeriods();
+  const cmp = getComparePeriods();
+  const cur = sumObj(GA4.kpis, periods);
+  const prev = cmp ? sumObj(GA4.kpis, cmp) : null;
+
+  const engagement = cur.sessions > 0 ? (cur.engaged_sessions / cur.sessions * 100) : 0;
+  const pEngagement = prev && prev.sessions > 0 ? (prev.engaged_sessions / prev.sessions * 100) : null;
+  const avgEng = cur.active_users > 0 ? (cur.total_eng_time_ms / cur.active_users) : 0;
+  const pAvgEng = prev && prev.active_users > 0 ? (prev.total_eng_time_ms / prev.active_users) : null;
+  const pvUser = cur.active_users > 0 ? (cur.pageviews / cur.active_users) : 0;
+  const pPvUser = prev && prev.active_users > 0 ? (prev.pageviews / prev.active_users) : null;
+  const leads = cur.form_submits + cur.quote_submits + cur.phone_clicks;
+  const pLeads = prev ? prev.form_submits + prev.quote_submits + prev.phone_clicks : null;
+  const leadRate = cur.sessions > 0 ? (leads / cur.sessions * 100) : 0;
+  const pLeadRate = prev && prev.sessions > 0 ? (pLeads / prev.sessions * 100) : null;
+
+  document.getElementById('kpi-row-1').innerHTML = [
+    kpiCard('Sessions', fmt(cur.sessions), prev?changeHtml(cur.sessions,prev.sessions):'', prev?`vs ${fmt(prev.sessions)}`:''),
+    kpiCard('Active Users', fmt(cur.active_users), prev?changeHtml(cur.active_users,prev.active_users):'', prev?`vs ${fmt(prev.active_users)}`:''),
+    kpiCard('New Users', fmt(cur.new_users), prev?changeHtml(cur.new_users,prev.new_users):'', prev?`vs ${fmt(prev.new_users)}`:''),
+    kpiCard('Pageviews', fmt(cur.pageviews), prev?changeHtml(cur.pageviews,prev.pageviews):'', prev?`vs ${fmt(prev.pageviews)}`:''),
+    kpiCard('Engagement', fmtPct(engagement), prev?changeHtml(engagement,pEngagement):'', prev?`vs ${fmtPct(pEngagement)}`:''),
+    kpiCard('Avg Eng. Time', fmtTime(avgEng), prev?changeHtml(avgEng,pAvgEng):'', prev?`vs ${fmtTime(pAvgEng)}`:''),
+    kpiCard('PV / User', pvUser.toFixed(1), prev?changeHtml(pvUser,pPvUser):'', prev?`vs ${pPvUser?.toFixed(1)||'—'}`:''),
+    kpiCard('Leads', fmt(leads), prev?changeHtml(leads,pLeads):'', prev?`vs ${fmt(pLeads)}`:''),
+    kpiCard('Form Submits', fmt(cur.form_submits), prev?changeHtml(cur.form_submits,prev.form_submits):'', prev?`vs ${fmt(prev.form_submits)}`:''),
+  ].join('');
+
+  document.getElementById('kpi-row-2').innerHTML = [
+    kpiCard('Lead Rate', fmtPct(leadRate), prev?changeHtml(leadRate,pLeadRate):'', prev?`vs ${fmtPct(pLeadRate)}`:''),
+    kpiCard('Quote Requests', fmt(cur.quote_submits), prev?changeHtml(cur.quote_submits,prev.quote_submits):'', prev?`vs ${fmt(prev.quote_submits)}`:''),
+    kpiCard('Phone Clicks', fmt(cur.phone_clicks), prev?changeHtml(cur.phone_clicks,prev.phone_clicks):'', prev?`vs ${fmt(prev.phone_clicks)}`:''),
+    kpiCard('Form Starts', fmt(cur.form_starts), prev?changeHtml(cur.form_starts,prev.form_starts):'', prev?`vs ${fmt(prev.form_starts)}`:''),
+    kpiCard('Search Clicks', fmt(cur.search_clicks), prev?changeHtml(cur.search_clicks,prev.search_clicks):'', prev?`vs ${fmt(prev.search_clicks)}`:''),
+  ].join('');
+
+  // Channel table
+  const curCh = sumList(GA4.channels, periods);
+  const prevCh = cmp ? sumList(GA4.channels, cmp) : null;
+  const prevChMap = {}; if(prevCh) prevCh.forEach(c => prevChMap[c.channel]=c);
+  const show = !!cmp;
+  const pLabel = periods.length>1?'Total':periods[0];
+  const cLabel = cmp?cmp[0]:'';
+
+  let ch = `<table><thead><tr><th rowspan="2">Channel</th>
+    <th colspan="${show?3:1}" class="group-header">Sessions</th>
+    <th colspan="${show?3:1}" class="group-header">Leads</th>
+    <th colspan="${show?3:1}" class="group-header">Form Submits</th>
+    <th colspan="${show?3:1}" class="group-header">Quote Req.</th>
+    <th colspan="${show?3:1}" class="group-header">Lead Rate</th></tr>
+    <tr><th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}
+    <th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}
+    <th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}
+    <th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}
+    <th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}</tr></thead><tbody>`;
+
+  let totC={sessions:0,total_leads:0,form_submits:0,quote_submits:0},totP={sessions:0,total_leads:0,form_submits:0,quote_submits:0};
+  const allCh = ['Direct','Organic','Paid Social','Paid Search','Referral','Email','Other'];
+  allCh.forEach(name => {
+    const c = curCh.find(x=>x.channel===name)||{sessions:0,total_leads:0,form_submits:0,quote_submits:0};
+    const p = prevChMap[name]||{sessions:0,total_leads:0,form_submits:0,quote_submits:0};
+    if(!c.sessions && !p.sessions) return;
+    totC.sessions+=c.sessions; totC.total_leads+=c.total_leads; totC.form_submits+=c.form_submits; totC.quote_submits+=c.quote_submits;
+    totP.sessions+=p.sessions; totP.total_leads+=p.total_leads; totP.form_submits+=p.form_submits; totP.quote_submits+=p.quote_submits;
+    const lr=c.sessions>0?(c.total_leads/c.sessions*100):0, plr=p.sessions>0?(p.total_leads/p.sessions*100):0;
+    ch+=`<tr><td>${name}</td><td>${fmt(c.sessions)}</td>${show?`<td>${fmt(p.sessions)}</td>${changeTd(c.sessions,p.sessions)}`:''}
+      <td>${fmt(c.total_leads)}</td>${show?`<td>${fmt(p.total_leads)}</td>${changeTd(c.total_leads,p.total_leads)}`:''}
+      <td>${fmt(c.form_submits)}</td>${show?`<td>${fmt(p.form_submits)}</td>${changeTd(c.form_submits,p.form_submits)}`:''}
+      <td>${fmt(c.quote_submits)}</td>${show?`<td>${fmt(p.quote_submits)}</td>${changeTd(c.quote_submits,p.quote_submits)}`:''}
+      <td>${fmtPct(lr)}</td>${show?`<td>${fmtPct(plr)}</td>${changeTd(lr,plr)}`:''}</tr>`;
+  });
+  const tlr=totC.sessions>0?(totC.total_leads/totC.sessions*100):0, tplr=totP.sessions>0?(totP.total_leads/totP.sessions*100):0;
+  ch+=`<tr><td>Total</td><td>${fmt(totC.sessions)}</td>${show?`<td>${fmt(totP.sessions)}</td>${changeTd(totC.sessions,totP.sessions)}`:''}
+    <td>${fmt(totC.total_leads)}</td>${show?`<td>${fmt(totP.total_leads)}</td>${changeTd(totC.total_leads,totP.total_leads)}`:''}
+    <td>${fmt(totC.form_submits)}</td>${show?`<td>${fmt(totP.form_submits)}</td>${changeTd(totC.form_submits,totP.form_submits)}`:''}
+    <td>${fmt(totC.quote_submits)}</td>${show?`<td>${fmt(totP.quote_submits)}</td>${changeTd(totC.quote_submits,totP.quote_submits)}`:''}
+    <td>${fmtPct(tlr)}</td>${show?`<td>${fmtPct(tplr)}</td>${changeTd(tlr,tplr)}`:''}</tr></tbody></table>`;
+  document.getElementById('channel-table-wrap').innerHTML = ch;
+
+  // Sections table
+  const curS = sumList(GA4.sections, periods);
+  const prevS = cmp ? sumList(GA4.sections, cmp) : null;
+  const prevSMap = {}; if(prevS) prevS.forEach(s => prevSMap[s.section]=s);
+
+  let st = `<table><thead><tr><th rowspan="2">Section</th>
+    <th colspan="${show?3:1}" class="group-header">Sessions</th>
+    <th colspan="${show?3:1}" class="group-header">Pageviews</th>
+    <th colspan="${show?3:1}" class="group-header">PV/Session</th></tr>
+    <tr><th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}
+    <th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}
+    <th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}</tr></thead><tbody>`;
+  let ts={sessions:0,pageviews:0},tp={sessions:0,pageviews:0};
+  curS.forEach(s => {
+    const p=prevSMap[s.section]||{sessions:0,pageviews:0};
+    ts.sessions+=s.sessions; ts.pageviews+=s.pageviews; tp.sessions+=p.sessions; tp.pageviews+=p.pageviews;
+    const pv=s.sessions>0?s.pageviews/s.sessions:0, ppv=p.sessions>0?p.pageviews/p.sessions:0;
+    st+=`<tr><td>${s.section}</td><td>${fmt(s.sessions)}</td>${show?`<td>${fmt(p.sessions)}</td>${changeTd(s.sessions,p.sessions)}`:''}
+      <td>${fmt(s.pageviews)}</td>${show?`<td>${fmt(p.pageviews)}</td>${changeTd(s.pageviews,p.pageviews)}`:''}
+      <td>${pv.toFixed(2)}</td>${show?`<td>${ppv.toFixed(2)}</td>${changeTd(pv,ppv)}`:''}</tr>`;
+  });
+  const tpvs=ts.sessions>0?ts.pageviews/ts.sessions:0, tppvs=tp.sessions>0?tp.pageviews/tp.sessions:0;
+  st+=`<tr><td>Total</td><td>${fmt(ts.sessions)}</td>${show?`<td>${fmt(tp.sessions)}</td>${changeTd(ts.sessions,tp.sessions)}`:''}
+    <td>${fmt(ts.pageviews)}</td>${show?`<td>${fmt(tp.pageviews)}</td>${changeTd(ts.pageviews,tp.pageviews)}`:''}
+    <td>${tpvs.toFixed(2)}</td>${show?`<td>${tppvs.toFixed(2)}</td>${changeTd(tpvs,tppvs)}`:''}</tr></tbody></table>`;
+  document.getElementById('sections-table-wrap').innerHTML = st;
+}
+
+// ============================================================
+// RENDER HISTORICAL TRENDS
+// ============================================================
+function renderTrends() {
+  // Meta Ads charts
+  renderBarChart('chart-meta-spend', META_MONTHLY, 'cost_usd', '#4285f4', v => '$'+Math.round(v).toLocaleString());
+  renderBarChart('chart-meta-leads', META_MONTHLY, 'leads', '#34a853', v => v.toLocaleString());
+  renderBarChart('chart-meta-cpl', META_MONTHLY, '_cpl', '#ea4335', v => '$'+v.toFixed(2));
+  renderBarChart('chart-meta-impr', META_MONTHLY, 'impressions', '#fbbc04', v => (v/1000).toFixed(0)+'K');
+
+  // Meta trend table
+  let mt = `<table class="trend-table"><thead><tr><th>Month</th><th>Spend</th><th>Impressions</th><th>Clicks</th><th>Leads</th><th>CPL</th><th>Reach</th><th>LPV</th></tr></thead><tbody>`;
+  META_MONTHLY.forEach(d => {
+    const cpl = d.leads > 0 ? d.cost_usd / d.leads : 0;
+    mt += `<tr><td>${labelMonth(d.month)}</td><td>${fmtMoney(d.cost_usd)}</td><td>${fmt(d.impressions)}</td><td>${fmt(d.clicks)}</td><td>${fmt(d.leads)}</td><td>${cpl>0?fmtMoney(cpl):'—'}</td><td>${fmt(d.reach)}</td><td>${fmt(d.landing_page_views)}</td></tr>`;
+  });
+  mt += '</tbody></table>';
+  document.getElementById('meta-trend-table').innerHTML = mt;
+
+  // GSC charts
+  renderBarChart('chart-gsc-clicks', GSC_MONTHLY, 'clicks', '#4285f4', v => v.toLocaleString());
+  renderBarChart('chart-gsc-impr', GSC_MONTHLY, 'impressions', '#fbbc04', v => (v/1000).toFixed(0)+'K');
+
+  // GSC trend table
+  let gt = `<table class="trend-table"><thead><tr><th>Month</th><th>Impressions</th><th>Clicks</th><th>CTR</th></tr></thead><tbody>`;
+  GSC_MONTHLY.forEach(d => {
+    gt += `<tr><td>${labelMonth(d.month)}</td><td>${fmt(d.impressions)}</td><td>${fmt(d.clicks)}</td><td>${d.ctr_pct.toFixed(2)}%</td></tr>`;
+  });
+  gt += '</tbody></table>';
+  document.getElementById('gsc-trend-table').innerHTML = gt;
+
+  // Google Ads trend table
+  let at = `<table class="trend-table"><thead><tr><th>Month</th><th>Spend</th><th>Impressions</th><th>Clicks</th><th>Conversions</th><th>CPC</th></tr></thead><tbody>`;
+  GADS_MONTHLY.forEach(d => {
+    const cpc = d.clicks > 0 ? d.cost_usd / d.clicks : 0;
+    at += `<tr><td>${labelMonth(d.month)}</td><td>${fmtMoney(d.cost_usd)}</td><td>${fmt(d.impressions)}</td><td>${fmt(d.clicks)}</td><td>${fmt(d.conversions)}</td><td>${cpc>0?fmtMoney(cpc):'—'}</td></tr>`;
+  });
+  at += '</tbody></table>';
+  document.getElementById('gads-trend-table').innerHTML = at;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state[btn.dataset.filter] = btn.dataset.value;
+    renderGA4();
+  });
+});
+
+renderGA4();
+renderTrends();
+</script>
+</body>
+</html>
