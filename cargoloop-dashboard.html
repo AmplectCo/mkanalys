@@ -3,467 +3,826 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CargoLoop — Digital Marketing Dashboard</title>
+<title>CargoLoop Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #fff; color: #1a1a1a; font-size: 13px; padding: 24px 32px; }
+:root{--bg:#fafaf9;--bg2:#fff;--bg3:#f5f5f4;--hover:#eceae8;--tx:#1c1917;--tx2:#78716c;--tx3:#a8a29e;--bd:#e7e5e4;--bd2:#d6d3d1;--pos:#15803d;--posbg:#dcfce7;--neg:#b91c1c;--negbg:#fee2e2;--acc:#2563eb}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);font-size:13px}
 
-  h1 { font-size: 22px; font-weight: 700; margin-bottom: 2px; }
-  .subtitle { font-size: 11px; color: #888; margin-bottom: 16px; }
+/* LOGIN SCREEN */
+.login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
+.login-box{background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:32px;width:340px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.login-box h2{font-size:18px;font-weight:700;margin-bottom:4px}
+.login-box p{font-size:12px;color:var(--tx2);margin-bottom:20px}
+.login-box input{width:100%;padding:8px 12px;border:1px solid var(--bd);border-radius:6px;font-size:13px;font-family:inherit;outline:none;margin-bottom:12px}
+.login-box input:focus{border-color:var(--acc)}
+.login-box button{width:100%;padding:8px;background:var(--acc);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.login-box button:hover{opacity:0.9}
+.login-error{color:var(--neg);font-size:11px;margin-top:8px;display:none}
 
-  /* Filters */
-  .filters { display: flex; gap: 24px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
-  .filter-group { display: flex; align-items: center; gap: 4px; }
-  .filter-label { font-size: 10px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px; }
-  .filter-btn { padding: 4px 10px; border: 1px solid #e0e0e0; background: #fff; border-radius: 4px; font-size: 12px; cursor: pointer; transition: all 0.15s; }
-  .filter-btn:hover { border-color: #999; }
-  .filter-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+/* NAV */
+.nav{background:var(--bg2);border-bottom:1px solid var(--bd);padding:0 24px;display:flex;align-items:center;gap:0;position:sticky;top:0;z-index:100}
+.nav .brand{font-weight:700;font-size:14px;color:var(--tx);margin-right:24px;padding:10px 0;text-decoration:none;cursor:default}
+.nav a{padding:10px 16px;font-size:12px;font-weight:600;color:var(--tx2);text-decoration:none;border-bottom:2px solid transparent;transition:color 0.15s}
+.nav a:hover{color:var(--tx)}
+.nav a.on{color:var(--acc);border-bottom-color:var(--acc)}
+.nav .spacer{flex:1}
+.nav .logout{font-size:11px;color:var(--tx3);padding:10px 0;text-decoration:none;cursor:pointer}
+.nav .logout:hover{color:var(--neg)}
 
-  /* KPI Cards */
-  .kpi-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
-  .kpi-card { border: 1px solid #e8e8e8; border-radius: 6px; padding: 12px 14px; min-width: 120px; flex: 1; }
-  .kpi-label { font-size: 10px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px; }
-  .kpi-value { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-  .kpi-change { font-size: 11px; font-weight: 600; }
-  .kpi-change.up { color: #22a355; }
-  .kpi-change.down { color: #e53935; }
-  .kpi-vs { font-size: 10px; color: #aaa; }
+/* GLOBAL FILTER BAR */
+.gfilter{background:var(--bg2);border-bottom:1px solid var(--bd);padding:6px 24px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;position:sticky;top:37px;z-index:99}
+.gfilter .flabel{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px}
+.tg{display:inline-flex;gap:0;border:1px solid var(--bd);border-radius:5px;overflow:hidden}
+.tb{padding:4px 10px;font-size:11px;font-weight:500;cursor:pointer;font-family:inherit;color:var(--tx2);background:var(--bg2);border:none;border-right:1px solid var(--bd);transition:all 0.12s}
+.tb:last-child{border-right:none}
+.tb:hover{background:var(--bg3);color:var(--tx)}
+.tb.on{background:var(--tx);color:#fff}
 
-  /* Section headers */
-  .section-title { font-size: 15px; font-weight: 700; margin: 28px 0 12px 0; }
-  .section-subtitle { font-size: 11px; color: #888; margin: -8px 0 12px 0; }
+/* MAIN CONTENT */
+.main{display:none}
+.content{max-width:1400px;margin:0 auto;padding:20px 24px}
+.page-title{font-size:22px;font-weight:700;margin-bottom:2px}
+.page-sub{font-size:11px;color:var(--tx2);margin-bottom:14px}
 
-  /* Tables */
-  .table-wrap { overflow-x: auto; margin-bottom: 24px; }
-  table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  th { font-size: 10px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.3px; padding: 8px 10px; text-align: right; border-bottom: 2px solid #eee; white-space: nowrap; }
-  th:first-child { text-align: left; }
-  th.group-header { text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 11px; color: #555; }
-  td { padding: 7px 10px; text-align: right; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
-  td:first-child { text-align: left; font-weight: 600; }
-  tr:last-child td { border-bottom: 2px solid #ddd; font-weight: 700; }
-  tr:hover { background: #fafafa; }
-  .change-up { color: #22a355; font-weight: 600; }
-  .change-down { color: #e53935; font-weight: 600; }
+/* KPI ROW */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:6px;margin-bottom:14px}
+.kpi{background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:8px 10px}
+.kpi .kl{font-size:9px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px}
+.kpi .kv{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:-.5px}
+.kpi .kd{font-size:10px;margin-top:1px}
+.kpi .kvs{font-size:9px;color:var(--tx3);margin-top:1px}
 
-  /* Charts */
-  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-  .chart-box { border: 1px solid #e8e8e8; border-radius: 6px; padding: 16px; }
-  .chart-box h3 { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 12px; }
-  .bar-chart { display: flex; align-items: flex-end; gap: 3px; height: 120px; }
-  .bar-group { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }
-  .bar { width: 100%; min-width: 16px; max-width: 36px; border-radius: 3px 3px 0 0; transition: height 0.3s; position: relative; }
-  .bar:hover { opacity: 0.8; }
-  .bar-label { font-size: 9px; color: #aaa; margin-top: 4px; white-space: nowrap; }
-  .bar-val { font-size: 9px; color: #555; margin-bottom: 2px; font-weight: 600; white-space: nowrap; }
+/* CHANGE PILLS */
+.pill-p{color:var(--pos);font-weight:600}
+.pill-n{color:var(--neg);font-weight:600}
+.pill-z{color:var(--tx3)}
 
-  /* Trend table */
-  .trend-table td, .trend-table th { padding: 5px 8px; font-size: 11px; }
+/* SECTION TITLES */
+.stit{font-size:14px;font-weight:700;margin:18px 0 6px}
+.stip{font-size:10px;color:var(--tx3);margin-top:-4px;margin-bottom:8px}
 
-  .legend { display: flex; gap: 16px; margin-bottom: 8px; }
-  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #666; }
-  .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+/* TABLES */
+.tw{overflow-x:auto;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:12px;background:var(--bg2);border:1px solid var(--bd);border-radius:6px;overflow:hidden}
+thead th{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.3px;padding:8px 10px;text-align:right;border-bottom:1px solid var(--bd);white-space:nowrap;background:var(--bg3)}
+thead th:first-child{text-align:left}
+tbody td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--bd);white-space:nowrap}
+tbody td:first-child{text-align:left;font-weight:600}
+tbody tr:hover{background:var(--hover)}
+tbody tr:last-child td{font-weight:700;background:var(--bg3)}
+.yoy-cell{font-size:10px}
 
-  @media (max-width: 900px) {
-    .chart-grid { grid-template-columns: 1fr; }
-    .kpi-card { min-width: 100px; }
-    body { padding: 12px; }
-  }
+/* CHARTS */
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.chart-box{background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:14px}
+.chart-box h3{font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:8px}
+.chart-box canvas{width:100%!important;height:260px!important}
+@media(max-width:900px){.chart-row{grid-template-columns:1fr}.kpi-row{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}}
+
+/* PAGE SECTIONS */
+.page{display:none}
+.page.active{display:block}
 </style>
 </head>
 <body>
 
-<h1>CargoLoop — Digital Marketing Dashboard</h1>
-<div class="subtitle">BigQuery GA4 + Meta Ads + Google Ads + GSC · Finalized data · Generated Apr 6, 2026</div>
-
-<!-- Filters (GA4 section) -->
-<div class="filters">
-  <div class="filter-group">
-    <span class="filter-label">GA4 Period</span>
-    <button class="filter-btn active" data-filter="period" data-value="all">All (Feb–Apr)</button>
-    <button class="filter-btn" data-filter="period" data-value="Feb">Feb</button>
-    <button class="filter-btn" data-filter="period" data-value="Mar">Mar</button>
-    <button class="filter-btn" data-filter="period" data-value="Apr">Apr 1-5</button>
-  </div>
-  <div class="filter-group">
-    <span class="filter-label">Compare</span>
-    <button class="filter-btn active" data-filter="compare" data-value="mom">MoM</button>
-    <button class="filter-btn" data-filter="compare" data-value="none">Off</button>
+<!-- LOGIN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <h2>CargoLoop</h2>
+    <p>Digital Marketing Dashboard</p>
+    <input type="password" id="login-pw" placeholder="Password" autocomplete="off">
+    <button onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="login-error">Incorrect password</div>
   </div>
 </div>
 
-<!-- KPI Cards -->
-<div class="kpi-row" id="kpi-row-1"></div>
-<div class="kpi-row" id="kpi-row-2"></div>
+<!-- DASHBOARD (hidden until login) -->
+<div class="main" id="main-app">
+  <div class="nav">
+    <span class="brand">CargoLoop</span>
+    <a href="#" data-page="dashboard" class="on">Dashboard</a>
+    <a href="#" data-page="meta">Meta Ads</a>
+    <a href="#" data-page="gads">Google Ads</a>
+    <a href="#" data-page="gsc">Search Console</a>
+    <span class="spacer"></span>
+    <span class="logout" onclick="doLogout()">Logout</span>
+  </div>
 
-<!-- Channel Performance -->
-<div class="section-title">Channel Performance</div>
-<div class="table-wrap" id="channel-table-wrap"></div>
+  <!-- GLOBAL FILTER BAR -->
+  <div class="gfilter" id="global-filter">
+    <span class="flabel">Period</span>
+    <div class="tg" id="period-btns"></div>
+    <span class="flabel" style="margin-left:8px">Compare</span>
+    <div class="tg" id="compare-btns">
+      <button class="tb on" data-action="compare" data-val="mom">MoM</button>
+      <button class="tb" data-action="compare" data-val="off">Off</button>
+    </div>
+  </div>
 
-<!-- Site Sections -->
-<div class="section-title">Site Sections</div>
-<div class="table-wrap" id="sections-table-wrap"></div>
+  <div class="content">
 
-<!-- ============================================================ -->
-<!-- HISTORICAL TRENDS -->
-<!-- ============================================================ -->
-<div class="section-title">Meta Ads — Monthly Trend</div>
-<div class="section-subtitle">Nov 2024 — Apr 2026 · Source: Meta_ads BigQuery dataset</div>
-<div class="chart-grid">
-  <div class="chart-box"><h3>Ad Spend (USD)</h3><div class="bar-chart" id="chart-meta-spend"></div></div>
-  <div class="chart-box"><h3>Leads (from Meta)</h3><div class="bar-chart" id="chart-meta-leads"></div></div>
-  <div class="chart-box"><h3>Cost per Lead (USD)</h3><div class="bar-chart" id="chart-meta-cpl"></div></div>
-  <div class="chart-box"><h3>Impressions</h3><div class="bar-chart" id="chart-meta-impr"></div></div>
-</div>
-<div class="table-wrap" id="meta-trend-table"></div>
+    <!-- ======== DASHBOARD PAGE ======== -->
+    <div class="page active" id="page-dashboard">
+      <h1 class="page-title">CargoLoop — Digital Marketing Dashboard</h1>
+      <div class="page-sub">BigQuery GA4 + Meta Ads + Google Ads + GSC &middot; Data through Apr 10, 2026 21:00</div>
 
-<div class="section-title">Google Search Console — Monthly Trend</div>
-<div class="section-subtitle">Oct 2025 — Apr 2026 · Source: searchconsole BigQuery dataset</div>
-<div class="chart-grid">
-  <div class="chart-box"><h3>GSC Clicks</h3><div class="bar-chart" id="chart-gsc-clicks"></div></div>
-  <div class="chart-box"><h3>GSC Impressions</h3><div class="bar-chart" id="chart-gsc-impr"></div></div>
-</div>
-<div class="table-wrap" id="gsc-trend-table"></div>
+      <div class="kpi-row" id="kpi-main"></div>
+      <div class="kpi-row" id="kpi-conv"></div>
 
-<div class="section-title">Google Ads — Monthly Trend</div>
-<div class="section-subtitle">Feb — Mar 2026 · Source: CargoLoop_GoogleAds BigQuery dataset</div>
-<div class="table-wrap" id="gads-trend-table"></div>
+      <div class="stit">Channel Performance <span style="font-weight:400;color:var(--tx3);font-size:11px">(excl. tracking sessions)</span></div>
+      <div class="tw" id="ch-table"></div>
+
+      <div class="stit">Site Sections</div>
+      <div class="stip">GA4 data only (Feb 2026+)</div>
+      <div class="tw" id="sec-table"></div>
+    </div>
+
+    <!-- ======== META ADS PAGE ======== -->
+    <div class="page" id="page-meta">
+      <h1 class="page-title">Meta Ads Performance</h1>
+      <div class="page-sub">Source: Meta_ads BigQuery dataset &middot; Nov 2024 — Present</div>
+
+      <div class="kpi-row" id="meta-kpis"></div>
+
+      <div class="stit">Monthly Trend</div>
+      <div class="chart-row">
+        <div class="chart-box"><h3>Ad Spend &amp; Leads</h3><canvas id="ch-meta-spend"></canvas></div>
+        <div class="chart-box"><h3>CPL &amp; CTR</h3><canvas id="ch-meta-cpl"></canvas></div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-box"><h3>Impressions &amp; Reach</h3><canvas id="ch-meta-impr"></canvas></div>
+        <div class="chart-box"><h3>Clicks &amp; Link Clicks</h3><canvas id="ch-meta-clicks"></canvas></div>
+      </div>
+
+      <div class="stit">Top Campaigns</div>
+      <div class="tw" id="meta-camp-table"></div>
+
+      <div class="stit">Monthly Breakdown</div>
+      <div class="tw" id="meta-monthly-table"></div>
+    </div>
+
+    <!-- ======== GOOGLE ADS PAGE ======== -->
+    <div class="page" id="page-gads">
+      <h1 class="page-title">Google Ads Performance</h1>
+      <div class="page-sub">Source: CargoLoop_GoogleAds BigQuery dataset &middot; Jan 2025 — Present</div>
+
+      <div class="kpi-row" id="gads-kpis"></div>
+
+      <div class="stit">Monthly Trend</div>
+      <div class="chart-row">
+        <div class="chart-box"><h3>Spend &amp; Clicks</h3><canvas id="ch-gads-spend"></canvas></div>
+        <div class="chart-box"><h3>Impressions &amp; CTR</h3><canvas id="ch-gads-impr"></canvas></div>
+      </div>
+
+      <div class="stit">Campaign Performance</div>
+      <div class="stip">Detailed data: Feb–Mar 2026 only</div>
+      <div class="tw" id="gads-camp-table"></div>
+
+      <div class="stit">Top Keywords</div>
+      <div class="stip">Detailed data: Feb–Mar 2026 only</div>
+      <div class="tw" id="gads-kw-table"></div>
+
+      <div class="stit">Monthly Breakdown</div>
+      <div class="tw" id="gads-monthly-table"></div>
+    </div>
+
+    <!-- ======== GSC PAGE ======== -->
+    <div class="page" id="page-gsc">
+      <h1 class="page-title">Google Search Console</h1>
+      <div class="page-sub">Combined: performance_report_raw + manual + url_impression &middot; Jan 2025 — Present</div>
+
+      <div class="kpi-row" id="gsc-kpis"></div>
+
+      <div class="stit">Monthly Trend</div>
+      <div class="chart-row">
+        <div class="chart-box"><h3>Clicks &amp; Impressions</h3><canvas id="ch-gsc-main"></canvas></div>
+        <div class="chart-box"><h3>CTR &amp; Avg Position</h3><canvas id="ch-gsc-ctr"></canvas></div>
+      </div>
+
+      <div class="stit">Top Search Queries</div>
+      <div class="tw" id="gsc-q-table"></div>
+
+      <div class="stit">Monthly Breakdown</div>
+      <div class="tw" id="gsc-monthly-table"></div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
 
 <script>
 // ============================================================
-// GA4 DATA (Feb–Apr 2026)
+// DATA
 // ============================================================
-const GA4 = {
-  kpis: {
-    Feb: {sessions:98877,active_users:17408,new_users:36356,pageviews:244389,engaged_sessions:61486,total_eng_time_ms:1571414899,form_submits:50285,quote_submits:196,phone_clicks:34,form_starts:64774,search_clicks:60701},
-    Mar: {sessions:128129,active_users:16556,new_users:55202,pageviews:329972,engaged_sessions:84758,total_eng_time_ms:2027912941,form_submits:72791,quote_submits:163,phone_clicks:126,form_starts:91830,search_clicks:85974},
-    Apr: {sessions:20393,active_users:5933,new_users:7000,pageviews:50426,engaged_sessions:12427,total_eng_time_ms:325235478,form_submits:10546,quote_submits:34,phone_clicks:12,form_starts:13245,search_clicks:12770}
-  },
-  channels: {
-    Feb: [
-      {channel:"Direct",sessions:84720,form_submits:22415,quote_submits:36,phone_clicks:8,total_leads:22459},
-      {channel:"Organic",sessions:8521,form_submits:3002,quote_submits:28,phone_clicks:8,total_leads:3038},
-      {channel:"Paid Social",sessions:3756,form_submits:4,quote_submits:89,phone_clicks:7,total_leads:100},
-      {channel:"Referral",sessions:1430,form_submits:535,quote_submits:6,phone_clicks:2,total_leads:543},
-      {channel:"Paid Search",sessions:324,form_submits:10,quote_submits:8,phone_clicks:1,total_leads:19},
-      {channel:"Other",sessions:127,form_submits:1,quote_submits:3,phone_clicks:0,total_leads:4}
-    ],
-    Mar: [
-      {channel:"Direct",sessions:115415,form_submits:31556,quote_submits:36,phone_clicks:21,total_leads:31613},
-      {channel:"Organic",sessions:9535,form_submits:2947,quote_submits:10,phone_clicks:18,total_leads:2975},
-      {channel:"Referral",sessions:1620,form_submits:599,quote_submits:11,phone_clicks:0,total_leads:610},
-      {channel:"Paid Social",sessions:1483,form_submits:4,quote_submits:33,phone_clicks:3,total_leads:40},
-      {channel:"Other",sessions:42,form_submits:2,quote_submits:10,phone_clicks:1,total_leads:13},
-      {channel:"Paid Search",sessions:35,form_submits:1,quote_submits:7,phone_clicks:0,total_leads:8}
-    ],
-    Apr: [
-      {channel:"Direct",sessions:17819,form_submits:4628,quote_submits:6,phone_clicks:3,total_leads:4637},
-      {channel:"Organic",sessions:1543,form_submits:467,quote_submits:6,phone_clicks:7,total_leads:480},
-      {channel:"Paid Social",sessions:643,form_submits:2,quote_submits:14,phone_clicks:1,total_leads:17},
-      {channel:"Referral",sessions:377,form_submits:134,quote_submits:1,phone_clicks:0,total_leads:135},
-      {channel:"Other",sessions:8,form_submits:2,quote_submits:1,phone_clicks:0,total_leads:3},
-      {channel:"Paid Search",sessions:4,form_submits:1,quote_submits:2,phone_clicks:0,total_leads:3}
-    ]
-  },
-  sections: {
-    Feb: [
-      {section:"Search",pageviews:185630,sessions:77760},{section:"Homepage",pageviews:46519,sessions:31577},{section:"Int. Transportation",pageviews:3090,sessions:2011},{section:"Get a Quote",pageviews:2070,sessions:1481},{section:"Contact",pageviews:1065,sessions:748},{section:"PL Pages",pageviews:564,sessions:293},{section:"Auto Auction",pageviews:468,sessions:332},{section:"UA Pages",pageviews:343,sessions:220},{section:"Company",pageviews:275,sessions:211},{section:"Other",pageviews:258,sessions:151},{section:"Insurance",pageviews:136,sessions:106},{section:"Dom. Transportation",pageviews:134,sessions:94},{section:"Thank You",pageviews:127,sessions:110},{section:"FAQ",pageviews:114,sessions:88},{section:"ES Pages",pageviews:53,sessions:25}
-    ],
-    Mar: [
-      {section:"Search",pageviews:257893,sessions:105974},{section:"Homepage",pageviews:61438,sessions:39975},{section:"Int. Transportation",pageviews:2664,sessions:1607},{section:"Get a Quote",pageviews:2658,sessions:1641},{section:"Contact",pageviews:1107,sessions:694},{section:"ES Pages",pageviews:700,sessions:180},{section:"PL Pages",pageviews:663,sessions:316},{section:"UA Pages",pageviews:454,sessions:289},{section:"Auto Auction",pageviews:420,sessions:246},{section:"Other",pageviews:293,sessions:164},{section:"Company",pageviews:285,sessions:181},{section:"Insurance",pageviews:181,sessions:143},{section:"Thank You",pageviews:149,sessions:101},{section:"Dom. Transportation",pageviews:122,sessions:80},{section:"FAQ",pageviews:105,sessions:67}
-    ],
-    Apr: [
-      {section:"Search",pageviews:39384,sessions:16644},{section:"Homepage",pageviews:9154,sessions:6252},{section:"Int. Transportation",pageviews:624,sessions:481},{section:"Get a Quote",pageviews:454,sessions:328},{section:"ES Pages",pageviews:158,sessions:132},{section:"Contact",pageviews:148,sessions:101},{section:"PL Pages",pageviews:107,sessions:54},{section:"UA Pages",pageviews:69,sessions:53},{section:"Auto Auction",pageviews:58,sessions:44},{section:"Insurance",pageviews:34,sessions:29},{section:"Other",pageviews:32,sessions:21},{section:"Company",pageviews:32,sessions:21},{section:"Thank You",pageviews:28,sessions:21},{section:"Dom. Transportation",pageviews:17,sessions:12},{section:"FAQ",pageviews:16,sessions:6}
-    ]
+const DATA = {"ga4_monthly": [{"month": "2026-02", "sessions_total": 84410, "sessions_tracking": 69687, "sessions_clean": 14723, "users_total": 15382, "pageviews_total": 208881, "pageviews_clean": 18132, "engaged_total": 0, "engaged_clean": 0, "eng_ms_total": 2300908667, "quote_leads": 150, "paid_leads": 88, "phone_clicks": 16}, {"month": "2026-03", "sessions_total": 128133, "sessions_tracking": 111355, "sessions_clean": 16778, "users_total": 16559, "pageviews_total": 330239, "pageviews_clean": 19666, "engaged_total": 0, "engaged_clean": 0, "eng_ms_total": 3572055626, "quote_leads": 107, "paid_leads": 40, "phone_clicks": 43}, {"month": "2026-04", "sessions_total": 40444, "sessions_tracking": 34726, "sessions_clean": 5718, "users_total": 8853, "pageviews_total": 100064, "pageviews_clean": 6743, "engaged_total": 0, "engaged_clean": 0, "eng_ms_total": 1122025079, "quote_leads": 53, "paid_leads": 24, "phone_clicks": 17}], "ga4_channels": [{"month": "2026-03", "channel": "Direct", "sessions": 115418, "sessions_clean": 13257, "sessions_tracking": 102161, "quote_leads": 36, "phone_clicks": 21, "pageviews_clean": 14319}, {"month": "2026-02", "channel": "Direct", "sessions": 72473, "sessions_clean": 9691, "sessions_tracking": 62782, "quote_leads": 33, "phone_clicks": 5, "pageviews_clean": 10589}, {"month": "2026-04", "channel": "Direct", "sessions": 35430, "sessions_clean": 4003, "sessions_tracking": 31427, "quote_leads": 15, "phone_clicks": 8, "pageviews_clean": 4195}, {"month": "2026-03", "channel": "Organic", "sessions": 9535, "sessions_clean": 1778, "sessions_tracking": 7757, "quote_leads": 10, "phone_clicks": 18, "pageviews_clean": 2845}, {"month": "2026-02", "channel": "Organic", "sessions": 7214, "sessions_clean": 1341, "sessions_tracking": 5873, "quote_leads": 23, "phone_clicks": 6, "pageviews_clean": 2423}, {"month": "2026-02", "channel": "Paid Search", "sessions": 3366, "sessions_clean": 3341, "sessions_tracking": 25, "quote_leads": 87, "phone_clicks": 5, "pageviews_clean": 4604}, {"month": "2026-04", "channel": "Organic", "sessions": 3186, "sessions_clean": 597, "sessions_tracking": 2589, "quote_leads": 11, "phone_clicks": 8, "pageviews_clean": 1041}, {"month": "2026-03", "channel": "Referral", "sessions": 1620, "sessions_clean": 201, "sessions_tracking": 1419, "quote_leads": 11, "phone_clicks": 0, "pageviews_clean": 321}, {"month": "2026-03", "channel": "Paid Search", "sessions": 1518, "sessions_clean": 1506, "sessions_tracking": 12, "quote_leads": 40, "phone_clicks": 3, "pageviews_clean": 2105}, {"month": "2026-02", "channel": "Referral", "sessions": 1255, "sessions_clean": 249, "sessions_tracking": 1006, "quote_leads": 5, "phone_clicks": 0, "pageviews_clean": 335}, {"month": "2026-04", "channel": "Paid Search", "sessions": 1060, "sessions_clean": 1049, "sessions_tracking": 11, "quote_leads": 24, "phone_clicks": 1, "pageviews_clean": 1393}, {"month": "2026-04", "channel": "Referral", "sessions": 746, "sessions_clean": 55, "sessions_tracking": 691, "quote_leads": 2, "phone_clicks": 0, "pageviews_clean": 89}, {"month": "2026-02", "channel": "Paid Social", "sessions": 58, "sessions_clean": 58, "sessions_tracking": 0, "quote_leads": 1, "phone_clicks": 0, "pageviews_clean": 96}, {"month": "2026-02", "channel": "Other", "sessions": 44, "sessions_clean": 43, "sessions_tracking": 1, "quote_leads": 1, "phone_clicks": 0, "pageviews_clean": 85}, {"month": "2026-03", "channel": "Other", "sessions": 31, "sessions_clean": 26, "sessions_tracking": 5, "quote_leads": 10, "phone_clicks": 1, "pageviews_clean": 64}, {"month": "2026-04", "channel": "Other", "sessions": 17, "sessions_clean": 9, "sessions_tracking": 8, "quote_leads": 1, "phone_clicks": 0, "pageviews_clean": 20}, {"month": "2026-03", "channel": "Paid Social", "sessions": 11, "sessions_clean": 10, "sessions_tracking": 1, "quote_leads": 0, "phone_clicks": 0, "pageviews_clean": 12}, {"month": "2026-04", "channel": "Paid Social", "sessions": 5, "sessions_clean": 5, "sessions_tracking": 0, "quote_leads": 0, "phone_clicks": 0, "pageviews_clean": 5}], "ga4_sections": [{"month": "2026-03", "section": "Search (Tracking)", "pageviews": 257872, "sessions": 105968}, {"month": "2026-02", "section": "Search (Tracking)", "pageviews": 158722, "sessions": 66361}, {"month": "2026-04", "section": "Search (Tracking)", "pageviews": 78641, "sessions": 32941}, {"month": "2026-03", "section": "Homepage", "pageviews": 61244, "sessions": 39757}, {"month": "2026-02", "section": "Homepage", "pageviews": 39223, "sessions": 26784}, {"month": "2026-04", "section": "Homepage", "pageviews": 17944, "sessions": 12280}, {"month": "2026-02", "section": "Int. Transportation", "pageviews": 3042, "sessions": 1978}, {"month": "2026-03", "section": "Get a Quote", "pageviews": 2678, "sessions": 1646}, {"month": "2026-03", "section": "Int. Transportation", "pageviews": 2668, "sessions": 1607}, {"month": "2026-02", "section": "Other", "pageviews": 2001, "sessions": 1303}, {"month": "2026-02", "section": "Get a Quote", "pageviews": 1857, "sessions": 1328}, {"month": "2026-03", "section": "ES Pages", "pageviews": 1382, "sessions": 261}, {"month": "2026-02", "section": "UA Pages", "pageviews": 1265, "sessions": 973}, {"month": "2026-03", "section": "Contact", "pageviews": 1111, "sessions": 694}, {"month": "2026-04", "section": "Int. Transportation", "pageviews": 981, "sessions": 751}, {"month": "2026-03", "section": "Other", "pageviews": 959, "sessions": 592}, {"month": "2026-02", "section": "Contact", "pageviews": 931, "sessions": 660}, {"month": "2026-04", "section": "Get a Quote", "pageviews": 763, "sessions": 554}, {"month": "2026-02", "section": "PL Pages", "pageviews": 685, "sessions": 346}, {"month": "2026-03", "section": "PL Pages", "pageviews": 651, "sessions": 309}, {"month": "2026-03", "section": "UA Pages", "pageviews": 468, "sessions": 302}, {"month": "2026-04", "section": "ES Pages", "pageviews": 456, "sessions": 408}, {"month": "2026-03", "section": "Auto Auction", "pageviews": 429, "sessions": 246}, {"month": "2026-02", "section": "Auto Auction", "pageviews": 388, "sessions": 275}, {"month": "2026-04", "section": "Contact", "pageviews": 349, "sessions": 235}, {"month": "2026-03", "section": "Company", "pageviews": 316, "sessions": 193}, {"month": "2026-04", "section": "Other", "pageviews": 271, "sessions": 202}, {"month": "2026-02", "section": "Company", "pageviews": 257, "sessions": 189}, {"month": "2026-02", "section": "Thank You", "pageviews": 198, "sessions": 161}, {"month": "2026-04", "section": "PL Pages", "pageviews": 179, "sessions": 101}, {"month": "2026-03", "section": "Thank You", "pageviews": 169, "sessions": 114}, {"month": "2026-03", "section": "Dom. Transportation", "pageviews": 164, "sessions": 92}, {"month": "2026-02", "section": "Dom. Transportation", "pageviews": 159, "sessions": 115}, {"month": "2026-04", "section": "UA Pages", "pageviews": 134, "sessions": 98}, {"month": "2026-03", "section": "FAQ", "pageviews": 128, "sessions": 74}, {"month": "2026-04", "section": "Auto Auction", "pageviews": 122, "sessions": 85}, {"month": "2026-02", "section": "FAQ", "pageviews": 113, "sessions": 84}, {"month": "2026-04", "section": "Company", "pageviews": 76, "sessions": 51}, {"month": "2026-04", "section": "Thank You", "pageviews": 64, "sessions": 55}, {"month": "2026-04", "section": "Dom. Transportation", "pageviews": 48, "sessions": 32}, {"month": "2026-02", "section": "ES Pages", "pageviews": 40, "sessions": 25}, {"month": "2026-04", "section": "FAQ", "pageviews": 36, "sessions": 19}], "backfill_monthly": [{"month": "2024-11", "sessions_total": 156218, "sessions_tracking": 0, "users_total": 71756, "engaged_total": 98711, "eng_sec_total": 3837663.0, "quote_leads": 111, "phone_clicks": 0}, {"month": "2024-12", "sessions_total": 149124, "sessions_tracking": 0, "users_total": 71588, "engaged_total": 93911, "eng_sec_total": 3942746.0, "quote_leads": 180, "phone_clicks": 0}, {"month": "2025-01", "sessions_total": 149607, "sessions_tracking": 0, "users_total": 72422, "engaged_total": 95591, "eng_sec_total": 3984930.0, "quote_leads": 303, "phone_clicks": 0}, {"month": "2025-02", "sessions_total": 155052, "sessions_tracking": 0, "users_total": 74800, "engaged_total": 98325, "eng_sec_total": 4038282.0, "quote_leads": 289, "phone_clicks": 0}, {"month": "2025-03", "sessions_total": 172027, "sessions_tracking": 0, "users_total": 83481, "engaged_total": 109673, "eng_sec_total": 4567427.0, "quote_leads": 251, "phone_clicks": 0}, {"month": "2025-04", "sessions_total": 164082, "sessions_tracking": 0, "users_total": 78240, "engaged_total": 103249, "eng_sec_total": 3984965.0, "quote_leads": 169, "phone_clicks": 0}, {"month": "2025-05", "sessions_total": 148222, "sessions_tracking": 0, "users_total": 72571, "engaged_total": 92653, "eng_sec_total": 3464429.0, "quote_leads": 204, "phone_clicks": 0}, {"month": "2025-06", "sessions_total": 123413, "sessions_tracking": 0, "users_total": 62254, "engaged_total": 76894, "eng_sec_total": 2742298.0, "quote_leads": 306, "phone_clicks": 0}, {"month": "2025-07", "sessions_total": 123419, "sessions_tracking": 0, "users_total": 63626, "engaged_total": 73775, "eng_sec_total": 2660350.0, "quote_leads": 574, "phone_clicks": 0}, {"month": "2025-08", "sessions_total": 121792, "sessions_tracking": 0, "users_total": 64487, "engaged_total": 71754, "eng_sec_total": 2640222.0, "quote_leads": 809, "phone_clicks": 0}, {"month": "2025-09", "sessions_total": 127323, "sessions_tracking": 0, "users_total": 67707, "engaged_total": 74065, "eng_sec_total": 2670219.0, "quote_leads": 509, "phone_clicks": 0}, {"month": "2025-10", "sessions_total": 36774, "sessions_tracking": 0, "users_total": 19243, "engaged_total": 20782, "eng_sec_total": 787790.0, "quote_leads": 106, "phone_clicks": 0}, {"month": "2025-11", "sessions_total": 72189, "sessions_tracking": 0, "users_total": 37557, "engaged_total": 42490, "eng_sec_total": 1667930.0, "quote_leads": 172, "phone_clicks": 26}, {"month": "2025-12", "sessions_total": 122526, "sessions_tracking": 0, "users_total": 61465, "engaged_total": 74126, "eng_sec_total": 2832789.0, "quote_leads": 260, "phone_clicks": 90}, {"month": "2026-01", "sessions_total": 123551, "sessions_tracking": 0, "users_total": 61374, "engaged_total": 73882, "eng_sec_total": 2651501.0, "quote_leads": 285, "phone_clicks": 58}, {"month": "2026-02", "sessions_total": 19648, "sessions_tracking": 0, "users_total": 9642, "engaged_total": 11958, "eng_sec_total": 451510.0, "quote_leads": 62, "phone_clicks": 13}], "backfill_channels": [{"month": "2024-11", "channel": "Direct", "sessions": 101395, "users": 47320}, {"month": "2024-11", "channel": "Organic", "sessions": 48637, "users": 20942}, {"month": "2024-11", "channel": "Paid Search", "sessions": 2356, "users": 1150}, {"month": "2024-11", "channel": "Other", "sessions": 2319, "users": 1582}, {"month": "2024-11", "channel": "Referral", "sessions": 1406, "users": 660}, {"month": "2024-11", "channel": "Paid Social", "sessions": 105, "users": 102}, {"month": "2024-12", "channel": "Direct", "sessions": 95865, "users": 45877}, {"month": "2024-12", "channel": "Organic", "sessions": 47474, "users": 21864}, {"month": "2024-12", "channel": "Other", "sessions": 2247, "users": 1565}, {"month": "2024-12", "channel": "Paid Search", "sessions": 1535, "users": 1085}, {"month": "2024-12", "channel": "Referral", "sessions": 1490, "users": 702}, {"month": "2024-12", "channel": "Paid Social", "sessions": 513, "users": 495}, {"month": "2025-01", "channel": "Direct", "sessions": 93625, "users": 44449}, {"month": "2025-01", "channel": "Organic", "sessions": 49277, "users": 22935}, {"month": "2025-01", "channel": "Other", "sessions": 2402, "users": 1837}, {"month": "2025-01", "channel": "Referral", "sessions": 1739, "users": 766}, {"month": "2025-01", "channel": "Paid Social", "sessions": 1509, "users": 1473}, {"month": "2025-01", "channel": "Paid Search", "sessions": 1055, "users": 962}, {"month": "2025-02", "channel": "Direct", "sessions": 95799, "users": 45631}, {"month": "2025-02", "channel": "Organic", "sessions": 52445, "users": 24135}, {"month": "2025-02", "channel": "Paid Social", "sessions": 2317, "users": 2203}, {"month": "2025-02", "channel": "Other", "sessions": 1933, "users": 1389}, {"month": "2025-02", "channel": "Referral", "sessions": 1673, "users": 727}, {"month": "2025-02", "channel": "Paid Search", "sessions": 885, "users": 715}, {"month": "2025-03", "channel": "Direct", "sessions": 111539, "users": 53932}, {"month": "2025-03", "channel": "Organic", "sessions": 54212, "users": 25716}, {"month": "2025-03", "channel": "Other", "sessions": 2140, "users": 1354}, {"month": "2025-03", "channel": "Referral", "sessions": 1935, "users": 823}, {"month": "2025-03", "channel": "Paid Search", "sessions": 1254, "users": 926}, {"month": "2025-03", "channel": "Paid Social", "sessions": 947, "users": 730}, {"month": "2025-04", "channel": "Direct", "sessions": 107060, "users": 50935}, {"month": "2025-04", "channel": "Organic", "sessions": 51311, "users": 23895}, {"month": "2025-04", "channel": "Other", "sessions": 2390, "users": 1401}, {"month": "2025-04", "channel": "Referral", "sessions": 1792, "users": 875}, {"month": "2025-04", "channel": "Paid Social", "sessions": 774, "users": 543}, {"month": "2025-04", "channel": "Paid Search", "sessions": 755, "users": 591}, {"month": "2025-05", "channel": "Direct", "sessions": 97472, "users": 47278}, {"month": "2025-05", "channel": "Organic", "sessions": 44128, "users": 21093}, {"month": "2025-05", "channel": "Other", "sessions": 2093, "users": 1226}, {"month": "2025-05", "channel": "Paid Social", "sessions": 1979, "users": 1503}, {"month": "2025-05", "channel": "Referral", "sessions": 1761, "users": 792}, {"month": "2025-05", "channel": "Paid Search", "sessions": 789, "users": 679}, {"month": "2025-06", "channel": "Direct", "sessions": 79833, "users": 40095}, {"month": "2025-06", "channel": "Organic", "sessions": 36988, "users": 17699}, {"month": "2025-06", "channel": "Paid Social", "sessions": 2359, "users": 1838}, {"month": "2025-06", "channel": "Other", "sessions": 1961, "users": 1082}, {"month": "2025-06", "channel": "Referral", "sessions": 1241, "users": 647}, {"month": "2025-06", "channel": "Paid Search", "sessions": 1031, "users": 893}, {"month": "2025-07", "channel": "Direct", "sessions": 78746, "users": 39507}, {"month": "2025-07", "channel": "Organic", "sessions": 35147, "users": 16941}, {"month": "2025-07", "channel": "Paid Social", "sessions": 4499, "users": 3666}, {"month": "2025-07", "channel": "Other", "sessions": 2816, "users": 2084}, {"month": "2025-07", "channel": "Paid Search", "sessions": 1157, "users": 842}, {"month": "2025-07", "channel": "Referral", "sessions": 1054, "users": 586}, {"month": "2025-08", "channel": "Direct", "sessions": 76552, "users": 38646}, {"month": "2025-08", "channel": "Organic", "sessions": 32654, "users": 15615}, {"month": "2025-08", "channel": "Paid Social", "sessions": 6954, "users": 5854}, {"month": "2025-08", "channel": "Other", "sessions": 4321, "users": 3491}, {"month": "2025-08", "channel": "Referral", "sessions": 718, "users": 409}, {"month": "2025-08", "channel": "Paid Search", "sessions": 593, "users": 472}, {"month": "2025-09", "channel": "Direct", "sessions": 78256, "users": 38398}, {"month": "2025-09", "channel": "Organic", "sessions": 33150, "users": 15798}, {"month": "2025-09", "channel": "Other", "sessions": 7556, "users": 6718}, {"month": "2025-09", "channel": "Paid Social", "sessions": 7373, "users": 6272}, {"month": "2025-09", "channel": "Referral", "sessions": 875, "users": 462}, {"month": "2025-09", "channel": "Paid Search", "sessions": 113, "users": 59}, {"month": "2025-10", "channel": "Direct", "sessions": 22993, "users": 11172}, {"month": "2025-10", "channel": "Organic", "sessions": 9706, "users": 4651}, {"month": "2025-10", "channel": "Paid Social", "sessions": 2084, "users": 1789}, {"month": "2025-10", "channel": "Other", "sessions": 1758, "users": 1496}, {"month": "2025-10", "channel": "Referral", "sessions": 230, "users": 133}, {"month": "2025-10", "channel": "Paid Search", "sessions": 3, "users": 2}, {"month": "2025-11", "channel": "Direct", "sessions": 56317, "users": 28099}, {"month": "2025-11", "channel": "Organic", "sessions": 11040, "users": 5681}, {"month": "2025-11", "channel": "Paid Social", "sessions": 2427, "users": 2051}, {"month": "2025-11", "channel": "Other", "sessions": 2256, "users": 1636}, {"month": "2025-11", "channel": "Referral", "sessions": 144, "users": 87}, {"month": "2025-11", "channel": "Paid Search", "sessions": 5, "users": 3}, {"month": "2025-12", "channel": "Direct", "sessions": 86819, "users": 42300}, {"month": "2025-12", "channel": "Organic", "sessions": 28567, "users": 13631}, {"month": "2025-12", "channel": "Paid Social", "sessions": 4705, "users": 3953}, {"month": "2025-12", "channel": "Other", "sessions": 1892, "users": 1324}, {"month": "2025-12", "channel": "Referral", "sessions": 534, "users": 249}, {"month": "2025-12", "channel": "Paid Search", "sessions": 9, "users": 8}, {"month": "2026-01", "channel": "Direct", "sessions": 82623, "users": 39886}, {"month": "2026-01", "channel": "Organic", "sessions": 33520, "users": 15892}, {"month": "2026-01", "channel": "Paid Social", "sessions": 4988, "users": 4078}, {"month": "2026-01", "channel": "Other", "sessions": 1607, "users": 1106}, {"month": "2026-01", "channel": "Referral", "sessions": 810, "users": 411}, {"month": "2026-01", "channel": "Paid Search", "sessions": 3, "users": 1}, {"month": "2026-02", "channel": "Direct", "sessions": 12425, "users": 5961}, {"month": "2026-02", "channel": "Organic", "sessions": 5966, "users": 2750}, {"month": "2026-02", "channel": "Paid Social", "sessions": 879, "users": 695}, {"month": "2026-02", "channel": "Other", "sessions": 218, "users": 152}, {"month": "2026-02", "channel": "Referral", "sessions": 160, "users": 84}], "backfill_events": [{"month": "2024-11", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 27}, {"month": "2024-11", "channel": "Referral", "event_name": "get_quote_form_submit", "cnt": 1}, {"month": "2024-11", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 1}, {"month": "2024-11", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 6}, {"month": "2024-11", "channel": "Paid Search", "event_name": "get_quote_form_submit", "cnt": 23}, {"month": "2024-11", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 53}, {"month": "2024-12", "channel": "Paid Search", "event_name": "get_quote_form_submit", "cnt": 39}, {"month": "2024-12", "channel": "Referral", "event_name": "get_quote_form_submit", "cnt": 1}, {"month": "2024-12", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 65}, {"month": "2024-12", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 10}, {"month": "2024-12", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 40}, {"month": "2024-12", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 25}, {"month": "2025-01", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 158}, {"month": "2025-01", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 54}, {"month": "2025-01", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 9}, {"month": "2025-01", "channel": "Paid Search", "event_name": "get_quote_form_submit", "cnt": 41}, {"month": "2025-01", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 41}, {"month": "2025-02", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 165}, {"month": "2025-02", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 45}, {"month": "2025-02", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 37}, {"month": "2025-02", "channel": "Paid Search", "event_name": "get_quote_form_submit", "cnt": 29}, {"month": "2025-02", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 13}, {"month": "2025-03", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 70}, {"month": "2025-03", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 71}, {"month": "2025-03", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 52}, {"month": "2025-03", "channel": "Paid Search", "event_name": "get_quote_form_submit", "cnt": 46}, {"month": "2025-03", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 8}, {"month": "2025-03", "channel": "Referral", "event_name": "get_quote_form_submit", "cnt": 4}, {"month": "2025-04", "channel": "Referral", "event_name": "get_quote_form_submit", "cnt": 7}, {"month": "2025-04", "channel": "Paid Search", "event_name": "get_quote_form_submit", "cnt": 17}, {"month": "2025-04", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 5}, {"month": "2025-04", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 35}, {"month": "2025-04", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 40}, {"month": "2025-04", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 65}, {"month": "2025-05", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 35}, {"month": "2025-05", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 6}, {"month": "2025-05", "channel": "Paid Search", "event_name": "get_quote_form_submit", "cnt": 34}, {"month": "2025-05", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 63}, {"month": "2025-05", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 63}, {"month": "2025-05", "channel": "Referral", "event_name": "get_quote_form_submit", "cnt": 3}, {"month": "2025-06", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 42}, {"month": "2025-06", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 47}, {"month": "2025-06", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 129}, {"month": "2025-06", "channel": "Referral", "event_name": "get_quote_form_submit", "cnt": 3}, {"month": "2025-06", "channel": "Paid Search", "event_name": "get_quote_form_submit", "cnt": 54}, {"month": "2025-06", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 31}, {"month": "2025-07", "channel": "Paid Search", "event_name": "get_quote_form_submit", "cnt": 45}, {"month": "2025-07", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 60}, {"month": "2025-07", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 36}, {"month": "2025-07", "channel": "Referral", "event_name": "get_quote_form_submit", "cnt": 12}, {"month": "2025-07", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 357}, {"month": "2025-07", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 64}, {"month": "2025-08", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 485}, {"month": "2025-08", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 94}, {"month": "2025-08", "channel": "Referral", "event_name": "get_quote_form_submit", "cnt": 3}, {"month": "2025-08", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 42}, {"month": "2025-08", "channel": "Paid Search", "event_name": "get_quote_form_submit", "cnt": 9}, {"month": "2025-08", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 176}, {"month": "2025-09", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 290}, {"month": "2025-09", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 133}, {"month": "2025-09", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 34}, {"month": "2025-09", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 52}, {"month": "2025-10", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 14}, {"month": "2025-10", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 63}, {"month": "2025-10", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 22}, {"month": "2025-10", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 7}, {"month": "2025-11", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 6}, {"month": "2025-11", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 16}, {"month": "2025-11", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 129}, {"month": "2025-11", "channel": "Other", "event_name": "phone_click", "cnt": 4}, {"month": "2025-11", "channel": "Paid Social", "event_name": "phone_click", "cnt": 6}, {"month": "2025-11", "channel": "Organic", "event_name": "phone_click", "cnt": 8}, {"month": "2025-11", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 21}, {"month": "2025-11", "channel": "Direct", "event_name": "phone_click", "cnt": 8}, {"month": "2025-12", "channel": "Paid Social", "event_name": "phone_click", "cnt": 16}, {"month": "2025-12", "channel": "Referral", "event_name": "phone_click", "cnt": 1}, {"month": "2025-12", "channel": "Referral", "event_name": "get_quote_form_submit", "cnt": 1}, {"month": "2025-12", "channel": "Direct", "event_name": "phone_click", "cnt": 46}, {"month": "2025-12", "channel": "Other", "event_name": "phone_click", "cnt": 1}, {"month": "2025-12", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 181}, {"month": "2025-12", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 13}, {"month": "2025-12", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 25}, {"month": "2025-12", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 40}, {"month": "2025-12", "channel": "Organic", "event_name": "phone_click", "cnt": 26}, {"month": "2026-01", "channel": "Referral", "event_name": "get_quote_form_submit", "cnt": 5}, {"month": "2026-01", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 12}, {"month": "2026-01", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 41}, {"month": "2026-01", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 182}, {"month": "2026-01", "channel": "Organic", "event_name": "phone_click", "cnt": 31}, {"month": "2026-01", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 45}, {"month": "2026-01", "channel": "Paid Social", "event_name": "phone_click", "cnt": 8}, {"month": "2026-01", "channel": "Other", "event_name": "phone_click", "cnt": 2}, {"month": "2026-01", "channel": "Direct", "event_name": "phone_click", "cnt": 16}, {"month": "2026-01", "channel": "Referral", "event_name": "phone_click", "cnt": 1}, {"month": "2026-02", "channel": "Paid Social", "event_name": "phone_click", "cnt": 4}, {"month": "2026-02", "channel": "Organic", "event_name": "phone_click", "cnt": 4}, {"month": "2026-02", "channel": "Other", "event_name": "phone_click", "cnt": 1}, {"month": "2026-02", "channel": "Direct", "event_name": "get_quote_form_submit", "cnt": 21}, {"month": "2026-02", "channel": "Direct", "event_name": "phone_click", "cnt": 4}, {"month": "2026-02", "channel": "Referral", "event_name": "get_quote_form_submit", "cnt": 1}, {"month": "2026-02", "channel": "Paid Social", "event_name": "get_quote_form_submit", "cnt": 28}, {"month": "2026-02", "channel": "Organic", "event_name": "get_quote_form_submit", "cnt": 9}, {"month": "2026-02", "channel": "Other", "event_name": "get_quote_form_submit", "cnt": 3}], "meta_monthly": [{"month": "2024-11", "spend": 69.89, "impressions": 22393, "clicks": 267, "leads": 5, "link_clicks": 119, "lpv": 59, "reach": 18323}, {"month": "2024-12", "spend": 310.93, "impressions": 126778, "clicks": 1514, "leads": 59, "link_clicks": 718, "lpv": 355, "reach": 97686}, {"month": "2025-01", "spend": 466.23, "impressions": 136601, "clicks": 3192, "leads": 107, "link_clicks": 2508, "lpv": 1136, "reach": 105597}, {"month": "2025-02", "spend": 838.62, "impressions": 288948, "clicks": 5690, "leads": 603, "link_clicks": 4056, "lpv": 1596, "reach": 215699}, {"month": "2025-03", "spend": 836.17, "impressions": 258460, "clicks": 3049, "leads": 69, "link_clicks": 1372, "lpv": 505, "reach": 172710}, {"month": "2025-04", "spend": 810.77, "impressions": 277596, "clicks": 2766, "leads": 40, "link_clicks": 1044, "lpv": 557, "reach": 189815}, {"month": "2025-05", "spend": 1146.92, "impressions": 446908, "clicks": 3762, "leads": 65, "link_clicks": 1633, "lpv": 834, "reach": 313306}, {"month": "2025-06", "spend": 1415.08, "impressions": 552784, "clicks": 7588, "leads": 125, "link_clicks": 2852, "lpv": 1369, "reach": 400089}, {"month": "2025-07", "spend": 2092.99, "impressions": 886968, "clicks": 15443, "leads": 329, "link_clicks": 7356, "lpv": 3763, "reach": 714526}, {"month": "2025-08", "spend": 3318.83, "impressions": 1373929, "clicks": 28040, "leads": 503, "link_clicks": 15196, "lpv": 6564, "reach": 1122576}, {"month": "2025-09", "spend": 3292.43, "impressions": 903673, "clicks": 21819, "leads": 311, "link_clicks": 16641, "lpv": 8949, "reach": 709248}, {"month": "2025-10", "spend": 2666.63, "impressions": 706586, "clicks": 16362, "leads": 234, "link_clicks": 12879, "lpv": 6220, "reach": 531282}, {"month": "2025-11", "spend": 2567.46, "impressions": 695932, "clicks": 11219, "leads": 172, "link_clicks": 6217, "lpv": 3222, "reach": 537053}, {"month": "2025-12", "spend": 3011.13, "impressions": 659359, "clicks": 11611, "leads": 136, "link_clicks": 7096, "lpv": 3467, "reach": 493543}, {"month": "2026-01", "spend": 2630.58, "impressions": 1131192, "clicks": 15008, "leads": 164, "link_clicks": 8146, "lpv": 3958, "reach": 866120}, {"month": "2026-02", "spend": 3617.25, "impressions": 1316424, "clicks": 13584, "leads": 139, "link_clicks": 8048, "lpv": 3960, "reach": 1009164}, {"month": "2026-03", "spend": 1772.21, "impressions": 619981, "clicks": 5479, "leads": 53, "link_clicks": 3094, "lpv": 1112, "reach": 438613}, {"month": "2026-04", "spend": 873.51, "impressions": 373874, "clicks": 3423, "leads": 31, "link_clicks": 1823, "lpv": 712, "reach": 283760}], "meta_campaigns": [{"campaignName": "Generic Leads | EU |", "first_month": "2025-08", "last_month": "2026-02", "spend": 4666.83, "impressions": 1334742, "clicks": 21236, "leads": 344, "reach": 1053525, "ctr": 1.59, "cpc": 0.22, "cpm": 3.5, "cpl": 13.57}, {"campaignName": "Generic Leads | Ukraine |", "first_month": "2025-10", "last_month": "2026-03", "spend": 4008.24, "impressions": 871587, "clicks": 10595, "leads": 138, "reach": 607245, "ctr": 1.22, "cpc": 0.38, "cpm": 4.6, "cpl": 29.05}, {"campaignName": "Generic Leads | Mid East |", "first_month": "2025-08", "last_month": "2026-03", "spend": 3161.52, "impressions": 2013471, "clicks": 38581, "leads": 438, "reach": 1605013, "ctr": 1.92, "cpc": 0.08, "cpm": 1.57, "cpl": 7.22}, {"campaignName": "Generic Mid East - Leads2", "first_month": "2025-02", "last_month": "2025-08", "spend": 2576.08, "impressions": 1280917, "clicks": 15228, "leads": 258, "reach": 901466, "ctr": 1.19, "cpc": 0.17, "cpm": 2.01, "cpl": 9.98}, {"campaignName": "Generic EU - Leads", "first_month": "2025-02", "last_month": "2025-08", "spend": 1963.21, "impressions": 567080, "clicks": 8004, "leads": 145, "reach": 438249, "ctr": 1.41, "cpc": 0.25, "cpm": 3.46, "cpl": 13.54}, {"campaignName": "Generic Central America - Leads", "first_month": "2025-04", "last_month": "2025-08", "spend": 1566.23, "impressions": 517096, "clicks": 7032, "leads": 150, "reach": 407026, "ctr": 1.36, "cpc": 0.22, "cpm": 3.03, "cpl": 10.44}, {"campaignName": "Generic Poland - Leads3", "first_month": "2025-10", "last_month": "2026-02", "spend": 1377.96, "impressions": 284451, "clicks": 3452, "leads": 57, "reach": 212859, "ctr": 1.21, "cpc": 0.4, "cpm": 4.84, "cpl": 24.17}, {"campaignName": "Generic Central America - Leads2", "first_month": "2025-08", "last_month": "2025-10", "spend": 1363.85, "impressions": 432649, "clicks": 15220, "leads": 202, "reach": 375296, "ctr": 3.52, "cpc": 0.09, "cpm": 3.15, "cpl": 6.75}, {"campaignName": "Generic Ukraine - Leads2", "first_month": "2025-08", "last_month": "2025-10", "spend": 1337.1, "impressions": 339802, "clicks": 4390, "leads": 71, "reach": 231895, "ctr": 1.29, "cpc": 0.3, "cpm": 3.93, "cpl": 18.83}, {"campaignName": "Generic Mid East - Leads", "first_month": "2024-11", "last_month": "2025-02", "spend": 1115.91, "impressions": 420685, "clicks": 8595, "leads": 697, "reach": 333002, "ctr": 2.04, "cpc": 0.13, "cpm": 2.65, "cpl": 1.6}, {"campaignName": "Partners Central America", "first_month": "2025-06", "last_month": "2025-10", "spend": 956.68, "impressions": 499339, "clicks": 12124, "leads": 306, "reach": 422171, "ctr": 2.43, "cpc": 0.08, "cpm": 1.92, "cpl": 3.13}, {"campaignName": "Generic_Leads_moto_PL_ALB_MD", "first_month": "2025-12", "last_month": "2025-12", "spend": 875.42, "impressions": 106651, "clicks": 2228, "leads": 25, "reach": 72756, "ctr": 2.09, "cpc": 0.39, "cpm": 8.21, "cpl": 35.02}, {"campaignName": "Generic Poland - Leads2", "first_month": "2025-08", "last_month": "2025-10", "spend": 861.26, "impressions": 184987, "clicks": 2167, "leads": 23, "reach": 133670, "ctr": 1.17, "cpc": 0.4, "cpm": 4.66, "cpl": 37.45}, {"campaignName": "leads_interests_tu_al_pain", "first_month": "2026-03", "last_month": "2026-04", "spend": 560.09, "impressions": 400296, "clicks": 3498, "leads": 36, "reach": 289624, "ctr": 0.87, "cpc": 0.16, "cpm": 1.4, "cpl": 15.56}, {"campaignName": "leads_interests_ua_pain", "first_month": "2026-03", "last_month": "2026-04", "spend": 512.05, "impressions": 112172, "clicks": 608, "leads": 7, "reach": 77094, "ctr": 0.54, "cpc": 0.84, "cpm": 4.56, "cpl": 73.15}, {"campaignName": "leads_interests_pl_pain", "first_month": "2026-03", "last_month": "2026-04", "spend": 456.1, "impressions": 98011, "clicks": 779, "leads": 4, "reach": 63772, "ctr": 0.79, "cpc": 0.59, "cpm": 4.65, "cpl": 114.03}, {"campaignName": "Generic Georgia - Leads", "first_month": "2025-10", "last_month": "2025-11", "spend": 439.87, "impressions": 80227, "clicks": 2387, "leads": 30, "reach": 58531, "ctr": 2.98, "cpc": 0.18, "cpm": 5.48, "cpl": 14.66}, {"campaignName": "Generic Poland - Leads", "first_month": "2025-07", "last_month": "2025-08", "spend": 438.25, "impressions": 104815, "clicks": 1751, "leads": 42, "reach": 79791, "ctr": 1.67, "cpc": 0.25, "cpm": 4.18, "cpl": 10.43}, {"campaignName": "Generic Leads | Lithuania |", "first_month": "2026-02", "last_month": "2026-02", "spend": 435.47, "impressions": 117626, "clicks": 669, "leads": 5, "reach": 64735, "ctr": 0.57, "cpc": 0.65, "cpm": 3.7, "cpl": 87.09}, {"campaignName": "Generic AZ - Leads", "first_month": "2025-10", "last_month": "2025-11", "spend": 421.82, "impressions": 53207, "clicks": 3882, "leads": 59, "reach": 31446, "ctr": 7.3, "cpc": 0.11, "cpm": 7.93, "cpl": 7.15}, {"campaignName": "leads_interests_eu_pain", "first_month": "2026-03", "last_month": "2026-04", "spend": 373.39, "impressions": 94963, "clicks": 683, "leads": 7, "reach": 67138, "ctr": 0.72, "cpc": 0.55, "cpm": 3.93, "cpl": 53.34}, {"campaignName": "Generic Leads | EU", "first_month": "2026-02", "last_month": "2026-03", "spend": 355.54, "impressions": 68103, "clicks": 783, "leads": 14, "reach": 49140, "ctr": 1.15, "cpc": 0.45, "cpm": 5.22, "cpl": 25.4}, {"campaignName": "Generic Leads | Poland |", "first_month": "2026-02", "last_month": "2026-02", "spend": 335.61, "impressions": 62835, "clicks": 534, "leads": 4, "reach": 42403, "ctr": 0.85, "cpc": 0.63, "cpm": 5.34, "cpl": 83.9}, {"campaignName": "Generic SL|SK|CZ - Leads", "first_month": "2025-10", "last_month": "2025-11", "spend": 250.51, "impressions": 39569, "clicks": 522, "leads": 9, "reach": 32854, "ctr": 1.32, "cpc": 0.48, "cpm": 6.33, "cpl": 27.83}, {"campaignName": "Generic Cambodia - Leads", "first_month": "2025-02", "last_month": "2025-04", "spend": 204.44, "impressions": 44277, "clicks": 802, "leads": 20, "reach": 32207, "ctr": 1.81, "cpc": 0.25, "cpm": 4.62, "cpl": 10.22}, {"campaignName": "Remarketing", "first_month": "2025-06", "last_month": "2025-07", "spend": 177.04, "impressions": 47014, "clicks": 386, "leads": 6, "reach": 22202, "ctr": 0.82, "cpc": 0.46, "cpm": 3.77, "cpl": 29.51}, {"campaignName": "Generic Leads | Lithuania", "first_month": "2026-02", "last_month": "2026-02", "spend": 171.15, "impressions": 45944, "clicks": 369, "leads": 3, "reach": 26786, "ctr": 0.8, "cpc": 0.46, "cpm": 3.73, "cpl": 57.05}, {"campaignName": "Awareness | Lithuania", "first_month": "2026-02", "last_month": "2026-02", "spend": 161.46, "impressions": 307059, "clicks": 340, "leads": 0, "reach": 293072, "ctr": 0.11, "cpc": 0.47, "cpm": 0.53, "cpl": null}, {"campaignName": "leads_advantage_gonduras_website", "first_month": "2026-03", "last_month": "2026-04", "spend": 133.78, "impressions": 44158, "clicks": 637, "leads": 7, "reach": 35708, "ctr": 1.44, "cpc": 0.21, "cpm": 3.03, "cpl": 19.11}, {"campaignName": "leads_interests_gonduras_website", "first_month": "2026-03", "last_month": "2026-04", "spend": 133.51, "impressions": 50418, "clicks": 589, "leads": 5, "reach": 37210, "ctr": 1.17, "cpc": 0.23, "cpm": 2.65, "cpl": 26.7}, {"campaignName": "leads_interests_gonduras_landing", "first_month": "2026-03", "last_month": "2026-04", "spend": 133.5, "impressions": 54741, "clicks": 646, "leads": 14, "reach": 41802, "ctr": 1.18, "cpc": 0.21, "cpm": 2.44, "cpl": 9.54}, {"campaignName": "Generic Moldova - Leads", "first_month": "2025-10", "last_month": "2025-10", "spend": 80.55, "impressions": 16893, "clicks": 315, "leads": 3, "reach": 12758, "ctr": 1.86, "cpc": 0.26, "cpm": 4.77, "cpl": 26.85}, {"campaignName": "leads_interests_tu_al_Main", "first_month": "2026-04", "last_month": "2026-04", "spend": 69.08, "impressions": 51306, "clicks": 392, "leads": 3, "reach": 41713, "ctr": 0.76, "cpc": 0.18, "cpm": 1.35, "cpl": 23.03}, {"campaignName": "Generic Ukraine - Leads", "first_month": "2025-08", "last_month": "2025-08", "spend": 43.8, "impressions": 13921, "clicks": 253, "leads": 13, "reach": 10143, "ctr": 1.82, "cpc": 0.17, "cpm": 3.15, "cpl": 3.37}, {"campaignName": "leads_interests_tu_al_loser", "first_month": "2026-04", "last_month": "2026-04", "spend": 20.33, "impressions": 17374, "clicks": 139, "leads": 0, "reach": 14808, "ctr": 0.8, "cpc": 0.15, "cpm": 1.17, "cpl": null}], "meta_campaigns_monthly": [{"month": "2024-11", "campaignName": "Generic Mid East - Leads", "spend": 69.89, "impressions": 22393, "clicks": 267, "leads": 5, "reach": 18323}, {"month": "2024-12", "campaignName": "Generic Mid East - Leads", "spend": 310.93, "impressions": 126778, "clicks": 1514, "leads": 59, "reach": 97686}, {"month": "2025-01", "campaignName": "Generic Mid East - Leads", "spend": 466.23, "impressions": 136601, "clicks": 3192, "leads": 107, "reach": 105597}, {"month": "2025-02", "campaignName": "Generic Mid East - Leads2", "spend": 413.59, "impressions": 108091, "clicks": 1315, "leads": 58, "reach": 73375}, {"month": "2025-02", "campaignName": "Generic Mid East - Leads", "spend": 268.86, "impressions": 134913, "clicks": 3622, "leads": 526, "reach": 111396}, {"month": "2025-02", "campaignName": "Generic EU - Leads", "spend": 111.35, "impressions": 34695, "clicks": 527, "leads": 12, "reach": 22870}, {"month": "2025-02", "campaignName": "Generic Cambodia - Leads", "spend": 44.82, "impressions": 11249, "clicks": 226, "leads": 7, "reach": 8058}, {"month": "2025-03", "campaignName": "Generic Mid East - Leads2", "spend": 478.42, "impressions": 171872, "clicks": 1872, "leads": 45, "reach": 112528}, {"month": "2025-03", "campaignName": "Generic EU - Leads", "spend": 241.52, "impressions": 63303, "clicks": 742, "leads": 12, "reach": 43502}, {"month": "2025-03", "campaignName": "Generic Cambodia - Leads", "spend": 116.23, "impressions": 23285, "clicks": 435, "leads": 12, "reach": 16680}, {"month": "2025-04", "campaignName": "Generic Mid East - Leads2", "spend": 384.42, "impressions": 164614, "clicks": 1365, "leads": 27, "reach": 106921}, {"month": "2025-04", "campaignName": "Generic EU - Leads", "spend": 293.81, "impressions": 78968, "clicks": 700, "leads": 10, "reach": 57215}, {"month": "2025-04", "campaignName": "Generic Central America - Leads", "spend": 89.15, "impressions": 24271, "clicks": 560, "leads": 2, "reach": 18210}, {"month": "2025-04", "campaignName": "Generic Cambodia - Leads", "spend": 43.39, "impressions": 9743, "clicks": 141, "leads": 1, "reach": 7469}, {"month": "2025-05", "campaignName": "Generic Mid East - Leads2", "spend": 455.02, "impressions": 242953, "clicks": 1785, "leads": 19, "reach": 159497}, {"month": "2025-05", "campaignName": "Generic EU - Leads", "spend": 389.96, "impressions": 106517, "clicks": 970, "leads": 13, "reach": 79263}, {"month": "2025-05", "campaignName": "Generic Central America - Leads", "spend": 301.94, "impressions": 97438, "clicks": 1007, "leads": 33, "reach": 74546}, {"month": "2025-06", "campaignName": "Generic Central America - Leads", "spend": 450.48, "impressions": 113021, "clicks": 1567, "leads": 48, "reach": 87883}, {"month": "2025-06", "campaignName": "Generic Mid East - Leads2", "spend": 412.34, "impressions": 268192, "clicks": 4318, "leads": 45, "reach": 188472}, {"month": "2025-06", "campaignName": "Generic EU - Leads", "spend": 388.46, "impressions": 128130, "clicks": 1262, "leads": 25, "reach": 102798}, {"month": "2025-06", "campaignName": "Remarketing", "spend": 155.26, "impressions": 39369, "clicks": 319, "leads": 6, "reach": 17965}, {"month": "2025-06", "campaignName": "Partners Central America", "spend": 8.54, "impressions": 4072, "clicks": 122, "leads": 1, "reach": 2971}, {"month": "2025-07", "campaignName": "Generic Central America - Leads", "spend": 589.75, "impressions": 221896, "clicks": 3039, "leads": 50, "reach": 177474}, {"month": "2025-07", "campaignName": "Generic EU - Leads", "spend": 463.24, "impressions": 126573, "clicks": 3133, "leads": 63, "reach": 107790}, {"month": "2025-07", "campaignName": "Generic Mid East - Leads2", "spend": 372.16, "impressions": 282839, "clicks": 3946, "leads": 53, "reach": 225832}, {"month": "2025-07", "campaignName": "Generic Poland - Leads", "spend": 336.13, "impressions": 77022, "clicks": 1277, "leads": 35, "reach": 58588}, {"month": "2025-07", "campaignName": "Partners Central America", "spend": 309.93, "impressions": 170993, "clicks": 3981, "leads": 128, "reach": 140605}, {"month": "2025-07", "campaignName": "Remarketing", "spend": 21.78, "impressions": 7645, "clicks": 67, "leads": 0, "reach": 4237}, {"month": "2025-08", "campaignName": "Generic Central America - Leads2", "spend": 633.86, "impressions": 284658, "clicks": 5032, "leads": 97, "reach": 251050}, {"month": "2025-08", "campaignName": "Generic Leads | EU |", "spend": 596.59, "impressions": 232824, "clicks": 3306, "leads": 47, "reach": 197841}, {"month": "2025-08", "campaignName": "Generic Ukraine - Leads2", "spend": 517.95, "impressions": 140142, "clicks": 1630, "leads": 37, "reach": 98125}, {"month": "2025-08", "campaignName": "Generic Leads | Mid East |", "spend": 428.45, "impressions": 272136, "clicks": 9412, "leads": 149, "reach": 210325}, {"month": "2025-08", "campaignName": "Generic Poland - Leads2", "spend": 415.75, "impressions": 98382, "clicks": 1360, "leads": 8, "reach": 74493}, {"month": "2025-08", "campaignName": "Partners Central America", "spend": 310.4, "impressions": 172353, "clicks": 4417, "leads": 107, "reach": 150831}, {"month": "2025-08", "campaignName": "Generic Central America - Leads", "spend": 134.91, "impressions": 60470, "clicks": 859, "leads": 17, "reach": 48913}, {"month": "2025-08", "campaignName": "Generic Poland - Leads", "spend": 102.12, "impressions": 27793, "clicks": 474, "leads": 7, "reach": 21203}, {"month": "2025-08", "campaignName": "Generic EU - Leads", "spend": 74.87, "impressions": 28894, "clicks": 670, "leads": 10, "reach": 24811}, {"month": "2025-08", "campaignName": "Generic Mid East - Leads2", "spend": 60.13, "impressions": 42356, "clicks": 627, "leads": 11, "reach": 34841}, {"month": "2025-08", "campaignName": "Generic Ukraine - Leads", "spend": 43.8, "impressions": 13921, "clicks": 253, "leads": 13, "reach": 10143}, {"month": "2025-09", "campaignName": "Generic Leads | EU |", "spend": 749.14, "impressions": 151676, "clicks": 4007, "leads": 75, "reach": 121840}, {"month": "2025-09", "campaignName": "Generic Ukraine - Leads2", "spend": 741.56, "impressions": 184573, "clicks": 2360, "leads": 34, "reach": 123934}, {"month": "2025-09", "campaignName": "Generic Central America - Leads2", "spend": 650.21, "impressions": 136946, "clicks": 8737, "leads": 89, "reach": 116147}, {"month": "2025-09", "campaignName": "Generic Leads | Mid East |", "spend": 501.65, "impressions": 228946, "clicks": 2936, "leads": 41, "reach": 187415}, {"month": "2025-09", "campaignName": "Generic Poland - Leads2", "spend": 364.18, "impressions": 73075, "clicks": 702, "leads": 14, "reach": 50506}, {"month": "2025-09", "campaignName": "Partners Central America", "spend": 285.69, "impressions": 128457, "clicks": 3077, "leads": 58, "reach": 109406}, {"month": "2025-10", "campaignName": "Generic Leads | EU |", "spend": 729.88, "impressions": 184128, "clicks": 4239, "leads": 68, "reach": 150247}, {"month": "2025-10", "campaignName": "Generic Leads | Ukraine |", "spend": 384.36, "impressions": 88737, "clicks": 968, "leads": 18, "reach": 61038}, {"month": "2025-10", "campaignName": "Generic Leads | Mid East |", "spend": 355.0, "impressions": 220001, "clicks": 3004, "leads": 42, "reach": 168354}, {"month": "2025-10", "campaignName": "Generic Georgia - Leads", "spend": 297.54, "impressions": 46300, "clicks": 1648, "leads": 21, "reach": 32556}, {"month": "2025-10", "campaignName": "Generic AZ - Leads", "spend": 294.43, "impressions": 38953, "clicks": 2949, "leads": 39, "reach": 22687}, {"month": "2025-10", "campaignName": "Generic Poland - Leads3", "spend": 179.46, "impressions": 37622, "clicks": 570, "leads": 9, "reach": 30154}, {"month": "2025-10", "campaignName": "Generic Poland - Leads2", "spend": 81.33, "impressions": 13530, "clicks": 105, "leads": 1, "reach": 8671}, {"month": "2025-10", "campaignName": "Generic Moldova - Leads", "spend": 80.55, "impressions": 16893, "clicks": 315, "leads": 3, "reach": 12758}, {"month": "2025-10", "campaignName": "Generic Central America - Leads2", "spend": 79.78, "impressions": 11045, "clicks": 1451, "leads": 16, "reach": 8099}, {"month": "2025-10", "campaignName": "Generic Ukraine - Leads2", "spend": 77.59, "impressions": 15087, "clicks": 400, "leads": 0, "reach": 9836}, {"month": "2025-10", "campaignName": "Generic SL|SK|CZ - Leads", "spend": 64.59, "impressions": 10826, "clicks": 186, "leads": 5, "reach": 8524}, {"month": "2025-10", "campaignName": "Partners Central America", "spend": 42.12, "impressions": 23464, "clicks": 527, "leads": 12, "reach": 18358}, {"month": "2025-11", "campaignName": "Generic Leads | EU |", "spend": 879.66, "impressions": 235800, "clicks": 3028, "leads": 60, "reach": 183219}, {"month": "2025-11", "campaignName": "Generic Leads | Ukraine |", "spend": 539.49, "impressions": 119557, "clicks": 1098, "leads": 22, "reach": 86461}, {"month": "2025-11", "campaignName": "Generic Poland - Leads3", "spend": 391.0, "impressions": 80643, "clicks": 1184, "leads": 18, "reach": 61843}, {"month": "2025-11", "campaignName": "Generic Leads | Mid East |", "spend": 301.67, "impressions": 183008, "clicks": 3901, "leads": 39, "reach": 146466}, {"month": "2025-11", "campaignName": "Generic SL|SK|CZ - Leads", "spend": 185.92, "impressions": 28743, "clicks": 336, "leads": 4, "reach": 24330}, {"month": "2025-11", "campaignName": "Generic Georgia - Leads", "spend": 142.33, "impressions": 33927, "clicks": 739, "leads": 9, "reach": 25975}, {"month": "2025-11", "campaignName": "Generic AZ - Leads", "spend": 127.39, "impressions": 14254, "clicks": 933, "leads": 20, "reach": 8759}, {"month": "2025-12", "campaignName": "Generic Leads | Ukraine |", "spend": 903.52, "impressions": 115379, "clicks": 1761, "leads": 25, "reach": 77981}, {"month": "2025-12", "campaignName": "Generic_Leads_moto_PL_ALB_MD", "spend": 875.42, "impressions": 106651, "clicks": 2228, "leads": 25, "reach": 72756}, {"month": "2025-12", "campaignName": "Generic Leads | EU |", "spend": 588.62, "impressions": 163632, "clicks": 2409, "leads": 37, "reach": 128981}, {"month": "2025-12", "campaignName": "Generic Leads | Mid East |", "spend": 387.33, "impressions": 226065, "clicks": 4762, "leads": 45, "reach": 177833}, {"month": "2025-12", "campaignName": "Generic Poland - Leads3", "spend": 256.24, "impressions": 47632, "clicks": 451, "leads": 4, "reach": 35992}, {"month": "2026-01", "campaignName": "Generic Leads | Ukraine |", "spend": 984.7, "impressions": 280080, "clicks": 2835, "leads": 48, "reach": 194385}, {"month": "2026-01", "campaignName": "Generic Leads | EU |", "spend": 720.61, "impressions": 269297, "clicks": 3027, "leads": 32, "reach": 201573}, {"month": "2026-01", "campaignName": "Generic Leads | Mid East |", "spend": 616.28, "impressions": 517677, "clicks": 8458, "leads": 67, "reach": 424039}, {"month": "2026-01", "campaignName": "Generic Poland - Leads3", "spend": 308.99, "impressions": 64138, "clicks": 688, "leads": 17, "reach": 46123}, {"month": "2026-02", "campaignName": "Generic Leads | Ukraine |", "spend": 1083.08, "impressions": 245357, "clicks": 3721, "leads": 25, "reach": 171830}, {"month": "2026-02", "campaignName": "Generic Leads | Mid East |", "spend": 521.26, "impressions": 334834, "clicks": 5562, "leads": 54, "reach": 265371}, {"month": "2026-02", "campaignName": "Generic Leads | Lithuania |", "spend": 435.47, "impressions": 117626, "clicks": 669, "leads": 5, "reach": 64735}, {"month": "2026-02", "campaignName": "Generic Leads | EU |", "spend": 402.33, "impressions": 97385, "clicks": 1220, "leads": 25, "reach": 69824}, {"month": "2026-02", "campaignName": "Generic Leads | Poland |", "spend": 335.61, "impressions": 62835, "clicks": 534, "leads": 4, "reach": 42403}, {"month": "2026-02", "campaignName": "Generic Leads | EU", "spend": 264.62, "impressions": 50968, "clicks": 610, "leads": 14, "reach": 36396}, {"month": "2026-02", "campaignName": "Generic Poland - Leads3", "spend": 242.27, "impressions": 54416, "clicks": 559, "leads": 9, "reach": 38747}, {"month": "2026-02", "campaignName": "Generic Leads | Lithuania", "spend": 171.15, "impressions": 45944, "clicks": 369, "leads": 3, "reach": 26786}, {"month": "2026-02", "campaignName": "Awareness | Lithuania", "spend": 161.46, "impressions": 307059, "clicks": 340, "leads": 0, "reach": 293072}, {"month": "2026-03", "campaignName": "leads_interests_tu_al_pain", "spend": 381.64, "impressions": 280960, "clicks": 2395, "leads": 28, "reach": 202197}, {"month": "2026-03", "campaignName": "leads_interests_pl_pain", "spend": 329.9, "impressions": 64730, "clicks": 495, "leads": 3, "reach": 42028}, {"month": "2026-03", "campaignName": "leads_interests_ua_pain", "spend": 325.63, "impressions": 72118, "clicks": 384, "leads": 3, "reach": 48752}, {"month": "2026-03", "campaignName": "leads_interests_eu_pain", "spend": 292.01, "impressions": 75888, "clicks": 542, "leads": 6, "reach": 52845}, {"month": "2026-03", "campaignName": "Generic Leads | Ukraine |", "spend": 113.09, "impressions": 22477, "clicks": 212, "leads": 0, "reach": 15550}, {"month": "2026-03", "campaignName": "Generic Leads | EU", "spend": 90.92, "impressions": 17135, "clicks": 173, "leads": 0, "reach": 12744}, {"month": "2026-03", "campaignName": "leads_advantage_gonduras_website", "spend": 65.12, "impressions": 17127, "clicks": 254, "leads": 5, "reach": 13137}, {"month": "2026-03", "campaignName": "leads_interests_gonduras_website", "spend": 62.47, "impressions": 18215, "clicks": 249, "leads": 3, "reach": 12026}, {"month": "2026-03", "campaignName": "leads_interests_gonduras_landing", "spend": 61.55, "impressions": 20527, "clicks": 229, "leads": 4, "reach": 14124}, {"month": "2026-03", "campaignName": "Generic Leads | Mid East |", "spend": 49.88, "impressions": 30804, "clicks": 546, "leads": 1, "reach": 25210}, {"month": "2026-04", "campaignName": "leads_interests_ua_pain", "spend": 186.42, "impressions": 40054, "clicks": 224, "leads": 4, "reach": 28342}, {"month": "2026-04", "campaignName": "leads_interests_tu_al_pain", "spend": 178.45, "impressions": 119336, "clicks": 1103, "leads": 8, "reach": 87427}, {"month": "2026-04", "campaignName": "leads_interests_pl_pain", "spend": 126.2, "impressions": 33281, "clicks": 284, "leads": 1, "reach": 21744}, {"month": "2026-04", "campaignName": "leads_interests_eu_pain", "spend": 81.38, "impressions": 19075, "clicks": 141, "leads": 1, "reach": 14293}, {"month": "2026-04", "campaignName": "leads_interests_gonduras_landing", "spend": 71.95, "impressions": 34214, "clicks": 417, "leads": 10, "reach": 27678}, {"month": "2026-04", "campaignName": "leads_interests_gonduras_website", "spend": 71.04, "impressions": 32203, "clicks": 340, "leads": 2, "reach": 25184}, {"month": "2026-04", "campaignName": "leads_interests_tu_al_Main", "spend": 69.08, "impressions": 51306, "clicks": 392, "leads": 3, "reach": 41713}, {"month": "2026-04", "campaignName": "leads_advantage_gonduras_website", "spend": 68.66, "impressions": 27031, "clicks": 383, "leads": 2, "reach": 22571}, {"month": "2026-04", "campaignName": "leads_interests_tu_al_loser", "spend": 20.33, "impressions": 17374, "clicks": 139, "leads": 0, "reach": 14808}], "gsc_raw_monthly": [{"month": "2025-01", "clicks": 15270, "impressions": 195488, "ctr": 7.81, "avg_position": 30.7}, {"month": "2025-02", "clicks": 15634, "impressions": 201961, "ctr": 7.74, "avg_position": 28.3}, {"month": "2025-03", "clicks": 14446, "impressions": 197350, "ctr": 7.32, "avg_position": 32.9}, {"month": "2025-04", "clicks": 12893, "impressions": 199572, "ctr": 6.46, "avg_position": 38.5}, {"month": "2025-05", "clicks": 10980, "impressions": 172080, "ctr": 6.38, "avg_position": 37.5}, {"month": "2025-06", "clicks": 220, "impressions": 4802, "ctr": 4.58, "avg_position": 49.0}], "gsc_manual_monthly": [{"month": "2024-08", "clicks": 1187, "impressions": 3455, "ctr": 34.36, "avg_position": 38.3}, {"month": "2024-09", "clicks": 12350, "impressions": 45077, "ctr": 27.4, "avg_position": 42.3}, {"month": "2024-10", "clicks": 16651, "impressions": 54905, "ctr": 30.33, "avg_position": 41.3}, {"month": "2024-11", "clicks": 16930, "impressions": 49101, "ctr": 34.48, "avg_position": 38.5}, {"month": "2024-12", "clicks": 14881, "impressions": 64545, "ctr": 23.06, "avg_position": 50.6}, {"month": "2025-01", "clicks": 16637, "impressions": 106867, "ctr": 15.57, "avg_position": 58.7}, {"month": "2025-02", "clicks": 17217, "impressions": 104470, "ctr": 16.48, "avg_position": 56.7}, {"month": "2025-03", "clicks": 15841, "impressions": 114095, "ctr": 13.88, "avg_position": 59.8}, {"month": "2025-04", "clicks": 14385, "impressions": 127526, "ctr": 11.28, "avg_position": 62.1}, {"month": "2025-05", "clicks": 12389, "impressions": 112274, "ctr": 11.03, "avg_position": 61.0}, {"month": "2025-06", "clicks": 9945, "impressions": 85347, "ctr": 11.65, "avg_position": 59.5}, {"month": "2025-07", "clicks": 9488, "impressions": 116550, "ctr": 8.14, "avg_position": 65.8}, {"month": "2025-08", "clicks": 9348, "impressions": 103751, "ctr": 9.01, "avg_position": 62.2}, {"month": "2025-09", "clicks": 10292, "impressions": 67030, "ctr": 15.35, "avg_position": 47.5}, {"month": "2025-10", "clicks": 976, "impressions": 5440, "ctr": 17.94, "avg_position": 32.6}], "gsc_monthly": [{"month": "2025-10", "clicks": 8931, "impressions": 120843, "ctr": 7.39, "avg_position": 14.2}, {"month": "2025-11", "clicks": 9035, "impressions": 116769, "ctr": 7.74, "avg_position": 12.6}, {"month": "2025-12", "clicks": 2618, "impressions": 46603, "ctr": 5.62, "avg_position": 19.4}, {"month": "2026-01", "clicks": 11287, "impressions": 179223, "ctr": 6.3, "avg_position": 23.6}, {"month": "2026-02", "clicks": 11928, "impressions": 144117, "ctr": 8.28, "avg_position": 19.7}, {"month": "2026-03", "clicks": 12086, "impressions": 118958, "ctr": 10.16, "avg_position": 12.6}, {"month": "2026-04", "clicks": 3181, "impressions": 30594, "ctr": 10.4, "avg_position": 12.2}], "gsc_queries": [{"query": "cargoloop", "clicks": 34380, "impressions": 258018, "ctr": 13.32, "avg_position": 0.0}, {"query": "\u043a\u0430\u0440\u0433\u043e\u043b\u0443\u043f", "clicks": 6471, "impressions": 22160, "ctr": 29.2, "avg_position": 0.6}, {"query": "cargoloop tracking", "clicks": 4684, "impressions": 33034, "ctr": 14.18, "avg_position": 2.7}, {"query": "cargo loop", "clicks": 1192, "impressions": 12191, "ctr": 9.78, "avg_position": 0.2}, {"query": "cargoloop llc", "clicks": 769, "impressions": 9648, "ctr": 7.97, "avg_position": 0.1}, {"query": "cargoloop \u015bledzenie", "clicks": 670, "impressions": 3825, "ctr": 17.52, "avg_position": 3.7}, {"query": "cargolop", "clicks": 392, "impressions": 2766, "ctr": 14.17, "avg_position": 0.1}, {"query": "\u043a\u0430\u0440\u0433\u0430\u043b\u0443\u043f", "clicks": 366, "impressions": 787, "ctr": 46.51, "avg_position": 0.0}, {"query": "\u043a\u0430\u0440\u0433\u043e \u043b\u0443\u043f", "clicks": 310, "impressions": 2142, "ctr": 14.47, "avg_position": 1.2}, {"query": "cargoloop.com", "clicks": 299, "impressions": 3140, "ctr": 9.52, "avg_position": 0.0}, {"query": "carloop", "clicks": 221, "impressions": 2114, "ctr": 10.45, "avg_position": 5.2}, {"query": "cargollop", "clicks": 210, "impressions": 1449, "ctr": 14.49, "avg_position": 0.0}, {"query": "\u043a\u0430\u0440\u0433\u043e\u043b\u0443\u043f \u0442\u0440\u0435\u043a\u0438\u043d\u0433", "clicks": 149, "impressions": 1091, "ctr": 13.66, "avg_position": 3.2}, {"query": "cargoloop, llc", "clicks": 123, "impressions": 1565, "ctr": 7.86, "avg_position": 0.1}, {"query": "rfhujkeg", "clicks": 86, "impressions": 269, "ctr": 31.97, "avg_position": 0.3}, {"query": "cargloop", "clicks": 72, "impressions": 607, "ctr": 11.86, "avg_position": 0.0}, {"query": "cargo loop llc", "clicks": 65, "impressions": 1267, "ctr": 5.13, "avg_position": 0.6}, {"query": "cargoloop app", "clicks": 57, "impressions": 765, "ctr": 7.45, "avg_position": 2.5}, {"query": "cargoloop logistics", "clicks": 51, "impressions": 561, "ctr": 9.09, "avg_position": 2.9}, {"query": "cargooloop", "clicks": 45, "impressions": 307, "ctr": 14.66, "avg_position": 0.0}, {"query": "cargoloop llc - savannah terminal", "clicks": 40, "impressions": 807, "ctr": 4.96, "avg_position": 0.8}, {"query": "\u043a\u0430\u0440\u0433\u043e\u043b\u043e\u043f", "clicks": 37, "impressions": 120, "ctr": 30.83, "avg_position": 0.0}, {"query": "cargo loop savannah", "clicks": 36, "impressions": 649, "ctr": 5.55, "avg_position": 0.7}, {"query": "cargoloop appointment", "clicks": 31, "impressions": 238, "ctr": 13.03, "avg_position": 0.2}, {"query": "cargoloo", "clicks": 30, "impressions": 306, "ctr": 9.8, "avg_position": 1.2}, {"query": "\u0441\u0444\u043a\u043f\u0449\u0434\u0449\u0449\u0437", "clicks": 21, "impressions": 124, "ctr": 16.94, "avg_position": 0.0}, {"query": "cargoloop opinie", "clicks": 17, "impressions": 591, "ctr": 2.88, "avg_position": 2.6}, {"query": "cargolup", "clicks": 15, "impressions": 100, "ctr": 15.0, "avg_position": 0.0}, {"query": "ship car california to new york", "clicks": 13, "impressions": 1239, "ctr": 1.05, "avg_position": 61.8}, {"query": "texas to california car shipping", "clicks": 12, "impressions": 1002, "ctr": 1.2, "avg_position": 67.8}, {"query": "loop cargo", "clicks": 12, "impressions": 275, "ctr": 4.36, "avg_position": 3.2}, {"query": "cargolo sendungsverfolgung", "clicks": 10, "impressions": 193, "ctr": 5.18, "avg_position": 3.2}, {"query": "\u0643\u0627\u0631\u0643\u0648", "clicks": 10, "impressions": 160, "ctr": 6.25, "avg_position": 10.8}, {"query": "cargopolo", "clicks": 9, "impressions": 1142, "ctr": 0.79, "avg_position": 3.9}, {"query": "cargopool", "clicks": 9, "impressions": 620, "ctr": 1.45, "avg_position": 3.9}, {"query": "cargopolo inc", "clicks": 9, "impressions": 320, "ctr": 2.81, "avg_position": 2.4}, {"query": "cargoloop elizabeth nj", "clicks": 9, "impressions": 343, "ctr": 2.62, "avg_position": 0.6}, {"query": "130 telfair rd savannah ga", "clicks": 9, "impressions": 145, "ctr": 6.21, "avg_position": 3.7}, {"query": "cargolo", "clicks": 9, "impressions": 818, "ctr": 1.1, "avg_position": 5.2}, {"query": "car loop", "clicks": 8, "impressions": 935, "ctr": 0.86, "avg_position": 5.2}, {"query": "cargoloop reviews", "clicks": 8, "impressions": 186, "ctr": 4.3, "avg_position": 3.6}, {"query": "2817 tremont rd. savannah, ga 31405", "clicks": 8, "impressions": 242, "ctr": 3.31, "avg_position": 1.5}, {"query": "auto transport ca to ny", "clicks": 7, "impressions": 1010, "ctr": 0.69, "avg_position": 64.1}, {"query": "california to new york car shipping", "clicks": 7, "impressions": 1021, "ctr": 0.69, "avg_position": 58.5}, {"query": "\u043a\u0430\u0440\u0433\u043e \u043b\u0443\u043f \u0442\u0440\u0435\u043a\u0438\u043d\u0433", "clicks": 7, "impressions": 54, "ctr": 12.96, "avg_position": 1.4}, {"query": "cargoolop", "clicks": 6, "impressions": 47, "ctr": 12.77, "avg_position": 0.0}, {"query": "ship car nj to california", "clicks": 6, "impressions": 534, "ctr": 1.12, "avg_position": 54.4}, {"query": "la to ny car shipping", "clicks": 6, "impressions": 622, "ctr": 0.96, "avg_position": 48.4}, {"query": "cargoloop indianapolis", "clicks": 5, "impressions": 174, "ctr": 2.87, "avg_position": 0.7}, {"query": "loop tracking", "clicks": 5, "impressions": 387, "ctr": 1.29, "avg_position": 8.9}], "gsc_queries_raw": [{"query": "cargoloop", "clicks": 49500, "impressions": 368983, "ctr": 13.42, "avg_position": 1.1}, {"query": "\u043a\u0430\u0440\u0433\u043e\u043b\u0443\u043f", "clicks": 6406, "impressions": 39311, "ctr": 16.3, "avg_position": 1.3}, {"query": "cargoloop tracking", "clicks": 6360, "impressions": 53809, "ctr": 11.82, "avg_position": 3.6}, {"query": "cargo loop", "clicks": 2478, "impressions": 21446, "ctr": 11.55, "avg_position": 1.2}, {"query": "cargoloop llc", "clicks": 852, "impressions": 11186, "ctr": 7.62, "avg_position": 1.3}, {"query": "cargoloop tracking number", "clicks": 809, "impressions": 6778, "ctr": 11.94, "avg_position": 3.9}, {"query": "\u043a\u0430\u0440\u0433\u0430\u043b\u0443\u043f", "clicks": 561, "impressions": 2671, "ctr": 21.0, "avg_position": 1.0}, {"query": "\u043a\u0430\u0440\u0433\u043e \u043b\u0443\u043f", "clicks": 423, "impressions": 2500, "ctr": 16.92, "avg_position": 1.0}, {"query": "cargoloop.com", "clicks": 220, "impressions": 2449, "ctr": 8.98, "avg_position": 1.1}, {"query": "cargolop", "clicks": 207, "impressions": 1915, "ctr": 10.81, "avg_position": 1.0}, {"query": "cargoloop shop", "clicks": 184, "impressions": 7533, "ctr": 2.44, "avg_position": 3.1}, {"query": "cargloop", "clicks": 182, "impressions": 1171, "ctr": 15.54, "avg_position": 1.1}, {"query": "cargollop", "clicks": 173, "impressions": 1261, "ctr": 13.72, "avg_position": 1.1}, {"query": "cargoloop polska", "clicks": 155, "impressions": 1587, "ctr": 9.77, "avg_position": 1.4}, {"query": "cargoloop, llc", "clicks": 85, "impressions": 1331, "ctr": 6.39, "avg_position": 1.1}, {"query": "cargo loop savannah", "clicks": 83, "impressions": 1110, "ctr": 7.48, "avg_position": 1.9}, {"query": "cargolup", "clicks": 68, "impressions": 545, "ctr": 12.48, "avg_position": 1.0}, {"query": "cargoloop appointment", "clicks": 51, "impressions": 604, "ctr": 8.44, "avg_position": 1.0}, {"query": "cargoloo", "clicks": 47, "impressions": 471, "ctr": 9.98, "avg_position": 1.1}, {"query": "cargo loop llc", "clicks": 47, "impressions": 1023, "ctr": 4.59, "avg_position": 1.5}, {"query": "cargooloop", "clicks": 43, "impressions": 350, "ctr": 12.29, "avg_position": 1.1}, {"query": "cargoloop app", "clicks": 42, "impressions": 988, "ctr": 4.25, "avg_position": 2.5}, {"query": "cargoloop indianapolis", "clicks": 40, "impressions": 1355, "ctr": 2.95, "avg_position": 2.2}, {"query": "carloop", "clicks": 33, "impressions": 224, "ctr": 14.73, "avg_position": 17.2}, {"query": "\u0441\u0444\u043a\u043f\u0449\u0434\u0449\u0449\u0437", "clicks": 32, "impressions": 228, "ctr": 14.04, "avg_position": 1.0}, {"query": "cargoloop savannah", "clicks": 31, "impressions": 1071, "ctr": 2.89, "avg_position": 2.2}, {"query": "cargoloop llc - savannah terminal", "clicks": 26, "impressions": 1134, "ctr": 2.29, "avg_position": 1.8}, {"query": "cargoloop.shop", "clicks": 22, "impressions": 1993, "ctr": 1.1, "avg_position": 4.9}, {"query": "\u043a\u0430\u0440\u0433\u043e \u043b\u0443\u043f \u0442\u0440\u0435\u043a\u0438\u043d\u0433", "clicks": 21, "impressions": 159, "ctr": 13.21, "avg_position": 2.0}, {"query": "cargoloop registration", "clicks": 18, "impressions": 178, "ctr": 10.11, "avg_position": 1.0}, {"query": "cargoloop elizabeth nj", "clicks": 15, "impressions": 304, "ctr": 4.93, "avg_position": 1.6}, {"query": "cargoloop opinie", "clicks": 14, "impressions": 840, "ctr": 1.67, "avg_position": 1.8}, {"query": "cargoloop \u043e\u0442\u0437\u044b\u0432\u044b", "clicks": 14, "impressions": 391, "ctr": 3.58, "avg_position": 2.9}, {"query": "cargoloop reviews", "clicks": 14, "impressions": 1522, "ctr": 0.92, "avg_position": 4.1}, {"query": "loop cargo", "clicks": 11, "impressions": 737, "ctr": 1.49, "avg_position": 1.9}, {"query": "car loop", "clicks": 11, "impressions": 1101, "ctr": 1.0, "avg_position": 8.3}, {"query": "cargo loops", "clicks": 10, "impressions": 1036, "ctr": 0.97, "avg_position": 4.2}, {"query": "130 telfair rd savannah ga", "clicks": 9, "impressions": 871, "ctr": 1.03, "avg_position": 3.5}, {"query": "cargoloop photos", "clicks": 8, "impressions": 1250, "ctr": 0.64, "avg_position": 3.7}, {"query": "cargoloop shop reviews", "clicks": 8, "impressions": 152, "ctr": 5.26, "avg_position": 1.5}, {"query": "cargo loop savannah ga", "clicks": 7, "impressions": 185, "ctr": 3.78, "avg_position": 2.0}, {"query": "cargoloopllc", "clicks": 7, "impressions": 58, "ctr": 12.07, "avg_position": 1.1}, {"query": "\u043a\u0430\u0440\u0433\u043e\u043b\u043e\u043f", "clicks": 5, "impressions": 20, "ctr": 25.0, "avg_position": 1.0}, {"query": "cargoloop savannah ga", "clicks": 5, "impressions": 186, "ctr": 2.69, "avg_position": 2.2}, {"query": "888 mclester street elizabeth nj", "clicks": 5, "impressions": 255, "ctr": 1.96, "avg_position": 2.0}, {"query": "cargopool", "clicks": 5, "impressions": 90, "ctr": 5.56, "avg_position": 5.2}, {"query": "loop tracking", "clicks": 5, "impressions": 463, "ctr": 1.08, "avg_position": 14.0}, {"query": "car auction access", "clicks": 4, "impressions": 69, "ctr": 5.8, "avg_position": 48.2}, {"query": "cargo loop houston", "clicks": 4, "impressions": 136, "ctr": 2.94, "avg_position": 3.3}, {"query": "tghu container which shipping line", "clicks": 3, "impressions": 70, "ctr": 4.29, "avg_position": 9.1}], "gads_lp_monthly": [{"month": "2025-01", "clicks": 1106, "impressions": 31255, "spend": 1392.73}, {"month": "2025-02", "clicks": 779, "impressions": 29971, "spend": 908.38}, {"month": "2025-03", "clicks": 1175, "impressions": 35922, "spend": 1793.6}, {"month": "2025-04", "clicks": 767, "impressions": 18369, "spend": 1432.21}, {"month": "2025-05", "clicks": 795, "impressions": 19577, "spend": 1740.56}, {"month": "2025-06", "clicks": 1120, "impressions": 22200, "spend": 2213.96}, {"month": "2025-07", "clicks": 1128, "impressions": 30003, "spend": 1780.78}, {"month": "2025-08", "clicks": 560, "impressions": 11312, "spend": 469.78}, {"month": "2025-09", "clicks": 32, "impressions": 466, "spend": 12.27}, {"month": "2025-11", "clicks": 14, "impressions": 287, "spend": 25.69}, {"month": "2025-12", "clicks": 17, "impressions": 622, "spend": 60.45}, {"month": "2026-02", "clicks": 477, "impressions": 12668, "spend": 613.14}, {"month": "2026-03", "clicks": 120, "impressions": 2977, "spend": 181.87}], "gads_monthly": [{"month": "2026-02", "clicks": 499, "impressions": 4769, "spend": 637.09}, {"month": "2026-03", "clicks": 125, "impressions": 1087, "spend": 188.87}], "gads_campaigns": [{"campaign_name": "Generic | Poland |", "impressions": 148614, "clicks": 17289, "spend": 20264.14, "ctr": 11.63, "cpc": 1.17}, {"campaign_name": "Generic | Ukraine |", "impressions": 88383, "clicks": 10659, "spend": 12771.65, "ctr": 12.06, "cpc": 1.2}, {"campaign_name": "Competitors | Poland |", "impressions": 61659, "clicks": 3876, "spend": 9088.17, "ctr": 6.29, "cpc": 2.34}, {"campaign_name": "Generic | Poland", "impressions": 26226, "clicks": 3051, "spend": 3576.03, "ctr": 11.63, "cpc": 1.17}, {"campaign_name": "Generic | Ukraine | AI Max", "impressions": 15597, "clicks": 1881, "spend": 2253.82, "ctr": 12.06, "cpc": 1.2}, {"campaign_name": "Competitors | Poland", "impressions": 10881, "clicks": 684, "spend": 1603.8, "ctr": 6.29, "cpc": 2.34}], "gads_keywords": [{"keyword": "import samochod\u00f3w z usa", "match_type": "PHRASE", "impressions": 104280, "clicks": 10440, "spend": 12056.51, "ctr": 10.01, "cpc": 1.15}, {"keyword": "\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430 \u0430\u0432\u0442\u043e \u0438\u0437 \u0441\u0448\u0430", "match_type": "PHRASE", "impressions": 65379, "clicks": 6771, "spend": 8104.74, "ctr": 10.36, "cpc": 1.2}, {"keyword": "transport auta z usa", "match_type": "PHRASE", "impressions": 46800, "clicks": 4560, "spend": 7107.49, "ctr": 9.74, "cpc": 1.56}, {"keyword": "import auta z usa", "match_type": "PHRASE", "impressions": 66000, "clicks": 7440, "spend": 6864.27, "ctr": 11.27, "cpc": 0.92}, {"keyword": "\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430 \u0430\u0432\u0442\u043e \u0437 \u0441\u0448\u0430", "match_type": "PHRASE", "impressions": 58080, "clicks": 5400, "spend": 6403.71, "ctr": 9.3, "cpc": 1.19}, {"keyword": "import auta z usa", "match_type": "EXACT", "impressions": 30840, "clicks": 5400, "spend": 5920.03, "ctr": 17.51, "cpc": 1.1}, {"keyword": "transport samochod\u00f3w z usa", "match_type": "PHRASE", "impressions": 19080, "clicks": 2760, "spend": 4458.0, "ctr": 14.47, "cpc": 1.62}, {"keyword": "import aut z usa", "match_type": "EXACT", "impressions": 23280, "clicks": 3720, "spend": 3837.61, "ctr": 15.98, "cpc": 1.03}, {"keyword": "import aut z usa", "match_type": "PHRASE", "impressions": 30120, "clicks": 3600, "spend": 3837.55, "ctr": 11.95, "cpc": 1.07}, {"keyword": "\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430 \u0430\u0432\u0442\u043e \u0438\u0437 \u0441\u0448\u0430", "match_type": "EXACT", "impressions": 12765, "clicks": 1998, "spend": 2521.27, "ctr": 15.65, "cpc": 1.26}, {"keyword": "\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430 \u0430\u0432\u0442\u043e \u0437 \u0430\u043c\u0435\u0440\u0438\u043a\u0438", "match_type": "PHRASE", "impressions": 19536, "clicks": 2553, "spend": 2488.58, "ctr": 13.07, "cpc": 0.97}, {"keyword": "\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430 \u0430\u0432\u0442\u043e \u0437 \u0441\u0448\u0430", "match_type": "EXACT", "impressions": 13200, "clicks": 2400, "spend": 2385.41, "ctr": 18.18, "cpc": 0.99}, {"keyword": "lion auto auction", "match_type": "EXACT", "impressions": 2580, "clicks": 780, "spend": 2027.4, "ctr": 30.23, "cpc": 2.6}, {"keyword": "import samochodow z usa", "match_type": "PHRASE", "impressions": 13200, "clicks": 1560, "spend": 1748.48, "ctr": 11.82, "cpc": 1.12}, {"keyword": "\u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430 \u0430\u0432\u0442\u043e \u0437 \u0430\u043c\u0435\u0440\u0438\u043a\u0438", "match_type": "EXACT", "impressions": 5883, "clicks": 888, "spend": 1744.92, "ctr": 15.09, "cpc": 1.97}, {"keyword": "ankaja", "match_type": "PHRASE", "impressions": 4860, "clicks": 780, "spend": 1708.8, "ctr": 16.05, "cpc": 2.19}, {"keyword": "w8 shipping", "match_type": "PHRASE", "impressions": 6960, "clicks": 780, "spend": 1605.6, "ctr": 11.21, "cpc": 2.06}, {"keyword": "w8 shipping", "match_type": "EXACT", "impressions": 10800, "clicks": 540, "spend": 1240.8, "ctr": 5.0, "cpc": 2.3}, {"keyword": "caucasus auto", "match_type": "EXACT", "impressions": 19740, "clicks": 360, "spend": 1045.8, "ctr": 1.82, "cpc": 2.9}, {"keyword": "\u043a\u043e\u043c\u043f\u0430\u043d\u0438\u0438 \u043f\u043e \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0435 \u0430\u0432\u0442\u043e \u0438\u0437 \u0441\u0448\u0430", "match_type": "PHRASE", "impressions": 3360, "clicks": 660, "spend": 997.32, "ctr": 19.64, "cpc": 1.51}, {"keyword": "\u043b\u043e\u0433\u0438\u0441\u0442\u0438\u043a\u0430 \u0430\u0432\u0442\u043e \u0438\u0437 \u0441\u0448\u0430", "match_type": "PHRASE", "impressions": 6240, "clicks": 840, "spend": 922.8, "ctr": 13.46, "cpc": 1.1}, {"keyword": "\u043f\u0435\u0440\u0435\u0432\u0435\u0437\u0435\u043d\u043d\u044f \u0430\u0432\u0442\u043e \u0437 \u0441\u0448\u0430", "match_type": "PHRASE", "impressions": 6240, "clicks": 960, "spend": 921.64, "ctr": 15.38, "cpc": 0.96}, {"keyword": "import samochod\u00f3w z usa", "match_type": "EXACT", "impressions": 8760, "clicks": 600, "spend": 788.4, "ctr": 6.85, "cpc": 1.31}, {"keyword": "vs brothers", "match_type": "PHRASE", "impressions": 2280, "clicks": 300, "spend": 716.4, "ctr": 13.16, "cpc": 2.39}, {"keyword": "ankaja", "match_type": "EXACT", "impressions": 7260, "clicks": 420, "spend": 683.37, "ctr": 5.79, "cpc": 1.63}, {"keyword": "caucasus auto", "match_type": "PHRASE", "impressions": 6780, "clicks": 240, "spend": 681.6, "ctr": 3.54, "cpc": 2.84}, {"keyword": "\u043a\u043e\u043c\u043f\u0430\u043d\u0438\u0438 \u043f\u043e \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0435 \u0430\u0432\u0442\u043e \u0438\u0437 \u0441\u0448\u0430", "match_type": "EXACT", "impressions": 1320, "clicks": 240, "spend": 570.0, "ctr": 18.18, "cpc": 2.38}, {"keyword": "transport samochod\u00f3w z usa", "match_type": "EXACT", "impressions": 960, "clicks": 120, "spend": 546.0, "ctr": 12.5, "cpc": 4.55}, {"keyword": "vs brothers", "match_type": "EXACT", "impressions": 2820, "clicks": 180, "spend": 514.8, "ctr": 6.38, "cpc": 2.86}, {"keyword": "lion auto auction", "match_type": "PHRASE", "impressions": 840, "clicks": 180, "spend": 467.4, "ctr": 21.43, "cpc": 2.6}]};
+const PW_HASH = 'CargoLoop2026';
+
+// ============================================================
+// AUTH
+// ============================================================
+function doLogin() {
+  const pw = document.getElementById('login-pw').value;
+  if (pw === PW_HASH) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
+    sessionStorage.setItem('cl_auth','1');
+    initDashboard();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
   }
-};
-
-// ============================================================
-// HISTORICAL DATA
-// ============================================================
-const META_MONTHLY = [
-  {month:"2024-11",cost_usd:69.89,impressions:22393,clicks:267,leads:5,link_clicks:119,landing_page_views:59,reach:18323},
-  {month:"2024-12",cost_usd:310.93,impressions:126778,clicks:1514,leads:59,link_clicks:718,landing_page_views:355,reach:97686},
-  {month:"2025-01",cost_usd:466.23,impressions:136601,clicks:3192,leads:107,link_clicks:2508,landing_page_views:1136,reach:105597},
-  {month:"2025-02",cost_usd:838.62,impressions:288948,clicks:5690,leads:603,link_clicks:4056,landing_page_views:1596,reach:215699},
-  {month:"2025-03",cost_usd:836.17,impressions:258460,clicks:3049,leads:69,link_clicks:1372,landing_page_views:505,reach:172710},
-  {month:"2025-04",cost_usd:810.77,impressions:277596,clicks:2766,leads:40,link_clicks:1044,landing_page_views:557,reach:189815},
-  {month:"2025-05",cost_usd:1146.92,impressions:446908,clicks:3762,leads:65,link_clicks:1633,landing_page_views:834,reach:313306},
-  {month:"2025-06",cost_usd:1415.08,impressions:552784,clicks:7588,leads:125,link_clicks:2852,landing_page_views:1369,reach:400089},
-  {month:"2025-07",cost_usd:2092.99,impressions:886968,clicks:15443,leads:329,link_clicks:7356,landing_page_views:3763,reach:714526},
-  {month:"2025-08",cost_usd:3318.83,impressions:1373929,clicks:28040,leads:503,link_clicks:15196,landing_page_views:6564,reach:1122576},
-  {month:"2025-09",cost_usd:3292.43,impressions:903673,clicks:21819,leads:311,link_clicks:16641,landing_page_views:8949,reach:709248},
-  {month:"2025-10",cost_usd:2666.63,impressions:706586,clicks:16362,leads:234,link_clicks:12879,landing_page_views:6220,reach:531282},
-  {month:"2025-11",cost_usd:2567.46,impressions:695932,clicks:11219,leads:172,link_clicks:6217,landing_page_views:3222,reach:537053},
-  {month:"2025-12",cost_usd:3011.13,impressions:659359,clicks:11611,leads:136,link_clicks:7096,landing_page_views:3467,reach:493543},
-  {month:"2026-01",cost_usd:2630.58,impressions:1131192,clicks:15008,leads:164,link_clicks:8146,landing_page_views:3958,reach:866120},
-  {month:"2026-02",cost_usd:3617.25,impressions:1316424,clicks:13584,leads:139,link_clicks:8048,landing_page_views:3960,reach:1009164},
-  {month:"2026-03",cost_usd:1772.21,impressions:619981,clicks:5479,leads:53,link_clicks:3094,landing_page_views:1112,reach:438613},
-  {month:"2026-04",cost_usd:500.37,impressions:235447,clicks:2134,leads:19,link_clicks:1153,landing_page_views:443,reach:178656}
-];
-
-const GSC_MONTHLY = [
-  {month:"2025-10",impressions:120843,clicks:8931,ctr_pct:7.39},
-  {month:"2025-11",impressions:116769,clicks:9035,ctr_pct:7.74},
-  {month:"2025-12",impressions:46603,clicks:2618,ctr_pct:5.62},
-  {month:"2026-01",impressions:179223,clicks:11287,ctr_pct:6.30},
-  {month:"2026-02",impressions:144117,clicks:11928,ctr_pct:8.28},
-  {month:"2026-03",impressions:118958,clicks:12086,ctr_pct:10.16},
-  {month:"2026-04",impressions:14628,clicks:1480,ctr_pct:10.12}
-];
-
-const GADS_MONTHLY = [
-  {month:"2026-02",clicks:499,impressions:4769,cost_usd:637.09,conversions:4},
-  {month:"2026-03",clicks:125,impressions:1087,cost_usd:188.87,conversions:1}
-];
-
-// ============================================================
-// STATE & HELPERS
-// ============================================================
-let state = { period: 'all', compare: 'mom' };
-
-function fmt(n) { return n == null ? '—' : typeof n === 'string' ? n : n.toLocaleString('en-US'); }
-function fmtPct(n) { return n == null || !isFinite(n) ? '—' : n.toFixed(1) + '%'; }
-function fmtMoney(n) { return n == null ? '—' : '$' + n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function fmtTime(ms) { const s = Math.round(ms/1000); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
-function shortMonth(m) { return m.replace('2024-','').replace('2025-','').replace('2026-','\'26-').replace('2025-','\'25-'); }
-function labelMonth(m) {
-  const [y,mm] = m.split('-');
-  const names = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return names[parseInt(mm)] + ' ' + y.slice(2);
+}
+document.getElementById('login-pw').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+function doLogout() {
+  sessionStorage.removeItem('cl_auth');
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-pw').value = '';
+  document.getElementById('login-error').style.display = 'none';
+}
+if (sessionStorage.getItem('cl_auth') === '1') {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+  setTimeout(initDashboard, 0);
 }
 
-function changeHtml(cur, prev) {
-  if (!prev || prev === 0) return '<span class="kpi-change">—</span>';
-  const pct = ((cur - prev) / Math.abs(prev)) * 100;
-  const cls = pct >= 0 ? 'up' : 'down';
-  return `<span class="kpi-change ${cls}">${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%</span>`;
-}
-function changeTd(cur, prev) {
-  if (!prev || prev === 0) return '<td>—</td>';
-  const pct = ((cur - prev) / Math.abs(prev)) * 100;
-  const cls = pct >= 0 ? 'change-up' : 'change-down';
-  return `<td class="${cls}">${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%</td>`;
-}
-
-function sumObj(data, periods) {
-  const result = {};
-  const keys = Object.keys(data.Feb || data.Mar || {});
-  keys.forEach(k => result[k] = 0);
-  periods.forEach(p => { if(data[p]) keys.forEach(k => result[k] += data[p][k]); });
-  return result;
-}
-function sumList(data, periods) {
-  const map = {};
-  periods.forEach(p => {
-    if(!data[p]) return;
-    data[p].forEach(c => {
-      const key = c.channel || c.section;
-      if(!map[key]) { map[key] = {...c}; }
-      else { Object.keys(c).forEach(k => { if(typeof c[k]==='number') map[key][k]+=c[k]; }); }
-    });
+// ============================================================
+// NAVIGATION
+// ============================================================
+document.querySelectorAll('.nav a[data-page]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('.nav a[data-page]').forEach(x => x.classList.remove('on'));
+    a.classList.add('on');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + a.dataset.page).classList.add('active');
+    renderCurrentPage();
   });
-  return Object.values(map).sort((a,b) => b.sessions - a.sessions);
-}
+});
 
-function getPeriods() { return state.period === 'all' ? ['Feb','Mar','Apr'] : [state.period]; }
-function getComparePeriods() {
-  if(state.compare !== 'mom') return null;
-  if(state.period === 'Mar') return ['Feb'];
-  if(state.period === 'Apr') return ['Mar'];
-  return null;
-}
+// ============================================================
+// HELPERS
+// ============================================================
+function fmt(n) { if(n==null) return '\u2014'; return typeof n==='number' ? n.toLocaleString('en-US') : n; }
+function fmtM(n) { if(n==null) return '\u2014'; return '$'+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+function fmtM2(n) { if(n==null) return '\u2014'; return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtP(n) { if(n==null||!isFinite(n)) return '\u2014'; return n.toFixed(1)+'%'; }
+function fmtP2(n) { if(n==null||!isFinite(n)) return '\u2014'; return n.toFixed(2)+'%'; }
+function fmtT(ms) { const s=Math.round(ms/1000); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function lm(m) { const [y,mm]=m.split('-'); const n=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return n[+mm]+' \''+y.slice(2); }
 
-function kpiCard(label, value, ch, vs) {
-  return `<div class="kpi-card"><div class="kpi-label">${label}</div><div class="kpi-value">${value}</div>${ch||''}${vs?`<div class="kpi-vs">${vs}</div>`:''}</div>`;
+function pill(cur,prev) {
+  if(prev==null||prev===0) return '<span class="pill-z">\u2014</span>';
+  const p=((cur-prev)/Math.abs(prev))*100;
+  if(p===0) return '<span class="pill-z">0%</span>';
+  const cls=p>0?'pill-p':'pill-n';
+  return `<span class="${cls}">${p>0?'+':''}${p.toFixed(1)}%</span>`;
+}
+function pillTd(cur,prev) {
+  return '<td class="yoy-cell">'+pill(cur,prev)+'</td>';
 }
 
 // ============================================================
-// BAR CHART RENDERER
+// UNIFIED DATA: GA4 timeline
 // ============================================================
-function renderBarChart(containerId, data, valueKey, color, formatter) {
-  const el = document.getElementById(containerId);
-  if(!el) return;
-  const vals = data.map(d => {
-    if(valueKey === '_cpl') return d.leads > 0 ? d.cost_usd / d.leads : 0;
-    return d[valueKey] || 0;
+const ga4Set = new Set(DATA.ga4_monthly.map(m=>m.month));
+const allMap = {};
+
+// Backfill first (older data)
+DATA.backfill_monthly.forEach(d => {
+  if(ga4Set.has(d.month)) return;
+  allMap[d.month] = {
+    month:d.month, src:'bf',
+    sessions_total:d.sessions_total, sessions_tracking:null, sessions_clean:null,
+    users_total:d.users_total, engaged_total:d.engaged_total||0,
+    eng_ms_total:(d.eng_sec_total||0)*1000,
+    quote_leads:d.quote_leads, paid_leads:0, phone_clicks:d.phone_clicks
+  };
+});
+DATA.backfill_events.forEach(e => {
+  if(!allMap[e.month]) return;
+  if(e.event_name==='get_quote_form_submit' && (e.channel==='Paid Social'||e.channel==='Paid Search'))
+    allMap[e.month].paid_leads += e.cnt;
+});
+// GA4 native (newer, more detailed)
+DATA.ga4_monthly.forEach(d => {
+  allMap[d.month] = {
+    month:d.month, src:'ga4',
+    sessions_total:d.sessions_total, sessions_tracking:d.sessions_tracking,
+    sessions_clean:d.sessions_clean, users_total:d.users_total,
+    engaged_total:d.engaged_total||0, eng_ms_total:d.eng_ms_total||0,
+    quote_leads:d.quote_leads, paid_leads:d.paid_leads, phone_clicks:d.phone_clicks
+  };
+});
+const allMonths = Object.keys(allMap).sort();
+
+// Unified channel data
+const allChData = [];
+DATA.backfill_channels.forEach(r => {
+  if(ga4Set.has(r.month)) return;
+  const evts = DATA.backfill_events.filter(e=>e.month===r.month&&e.channel===r.channel);
+  const q = evts.filter(e=>e.event_name==='get_quote_form_submit').reduce((s,e)=>s+e.cnt,0);
+  const p = evts.filter(e=>e.event_name==='phone_click').reduce((s,e)=>s+e.cnt,0);
+  allChData.push({month:r.month,channel:r.channel,sessions:r.sessions,sessions_clean:r.sessions,sessions_tracking:0,quote_leads:q,phone_clicks:p});
+});
+DATA.ga4_channels.forEach(r => allChData.push(r));
+
+// ============================================================
+// UNIFIED DATA: GSC timeline (3 sources merged)
+// ============================================================
+const gscMap = {};
+// 1. manual_till (earliest, site-level, Aug 2024 – Oct 2025)
+(DATA.gsc_manual_monthly||[]).forEach(d => {
+  gscMap[d.month] = {month:d.month, clicks:d.clicks, impressions:d.impressions, ctr:d.ctr, avg_position:d.avg_position, src:'manual'};
+});
+// 2. performance_report_raw (overwrites manual for Jan–Jun 2025 — more detailed)
+(DATA.gsc_raw_monthly||[]).forEach(d => {
+  gscMap[d.month] = {month:d.month, clicks:d.clicks, impressions:d.impressions, ctr:d.ctr, avg_position:d.avg_position, src:'raw'};
+});
+// 3. url_impression standard export (Oct 2025+ — overwrites anything before)
+(DATA.gsc_monthly||[]).forEach(d => {
+  gscMap[d.month] = {month:d.month, clicks:d.clicks, impressions:d.impressions, ctr:d.ctr, avg_position:d.avg_position, src:'export'};
+});
+const gscAll = Object.values(gscMap).sort((a,b)=>a.month.localeCompare(b.month));
+const gscMonths = gscAll.map(d=>d.month);
+
+// ============================================================
+// UNIFIED DATA: Google Ads timeline (LandingPageStats + CampaignBasicStats)
+// ============================================================
+const gadsMap = {};
+// LandingPageStats first (Jan 2025+)
+(DATA.gads_lp_monthly||[]).forEach(d => {
+  gadsMap[d.month] = {month:d.month, clicks:d.clicks, impressions:d.impressions, spend:d.spend, src:'lp'};
+});
+// CampaignBasicStats overwrites (more accurate for recent months)
+(DATA.gads_monthly||[]).forEach(d => {
+  gadsMap[d.month] = {month:d.month, clicks:d.clicks, impressions:d.impressions, spend:d.spend, src:'cbs'};
+});
+const gadsAll = Object.values(gadsMap).sort((a,b)=>a.month.localeCompare(b.month));
+const gadsMonths = gadsAll.map(d=>d.month);
+
+// ============================================================
+// UNIFIED DATA: Meta Ads
+// ============================================================
+const metaMonths = DATA.meta_monthly.map(d=>d.month);
+
+// ============================================================
+// GLOBAL PERIOD STATE
+// ============================================================
+// Collect ALL months across all sources for the global filter
+const allMonthsGlobal = [...new Set([...allMonths, ...gscMonths, ...gadsMonths, ...metaMonths])].sort();
+// Only show months from 2025-01 onwards
+const filterMonths = allMonthsGlobal.filter(m => m >= '2025-01');
+
+let state = {period:'all', compare:'mom'};
+
+function getMonthsFor(available) {
+  if(state.period==='all') return available.filter(m => m >= '2025-01');
+  return available.filter(m => m === state.period);
+}
+function getMonths() { return getMonthsFor(allMonths); }
+function getPrev(m, list) { const i=list.indexOf(m); return i>0?list[i-1]:null; }
+function getCmp(list) {
+  if(state.compare!=='mom') return null;
+  const sel=state.period==='all'?null:[state.period];
+  if(!sel) return null;
+  const p=getPrev(sel[0], list);
+  return p?[p]:null;
+}
+
+function sumM(months) {
+  const r={sessions_total:0,sessions_tracking:null,sessions_clean:null,users_total:0,engaged_total:0,eng_ms_total:0,quote_leads:0,paid_leads:0,phone_clicks:0};
+  let ht=false;
+  months.forEach(m => {
+    const d=allMap[m]; if(!d) return;
+    r.sessions_total+=d.sessions_total||0; r.users_total+=d.users_total||0;
+    r.engaged_total+=d.engaged_total||0; r.eng_ms_total+=d.eng_ms_total||0;
+    r.quote_leads+=d.quote_leads||0; r.paid_leads+=d.paid_leads||0; r.phone_clicks+=d.phone_clicks||0;
+    if(d.sessions_tracking!==null) {
+      ht=true;
+      r.sessions_tracking=(r.sessions_tracking||0)+d.sessions_tracking;
+      r.sessions_clean=(r.sessions_clean||0)+d.sessions_clean;
+    }
   });
-  const max = Math.max(...vals, 1);
-
-  el.innerHTML = data.map((d, i) => {
-    const h = Math.max(2, (vals[i] / max) * 100);
-    const label = labelMonth(d.month);
-    const val = formatter ? formatter(vals[i]) : fmt(Math.round(vals[i]));
-    return `<div class="bar-group"><div class="bar-val">${val}</div><div class="bar" style="height:${h}%;background:${color}" title="${label}: ${val}"></div><div class="bar-label">${label}</div></div>`;
-  }).join('');
+  if(!ht){r.sessions_tracking=null;r.sessions_clean=null;}
+  return r;
+}
+function sumCh(months) {
+  const map={};
+  allChData.filter(r=>months.includes(r.month)).forEach(r=>{
+    if(!map[r.channel]) map[r.channel]={channel:r.channel,sessions:0,sessions_clean:0,sessions_tracking:0,quote_leads:0,phone_clicks:0};
+    map[r.channel].sessions+=r.sessions;
+    map[r.channel].sessions_clean+=r.sessions_clean;
+    map[r.channel].sessions_tracking+=r.sessions_tracking;
+    map[r.channel].quote_leads+=r.quote_leads;
+    map[r.channel].phone_clicks+=r.phone_clicks;
+  });
+  return Object.values(map).sort((a,b)=>b.sessions_clean-a.sessions_clean);
+}
+function sumSec(months) {
+  const map={};
+  DATA.ga4_sections.filter(r=>months.includes(r.month)).forEach(r=>{
+    if(!map[r.section]) map[r.section]={section:r.section,pageviews:0,sessions:0};
+    map[r.section].pageviews+=r.pageviews; map[r.section].sessions+=r.sessions;
+  });
+  return Object.values(map).sort((a,b)=>b.pageviews-a.pageviews);
 }
 
 // ============================================================
-// RENDER GA4 SECTION
+// RENDER: DASHBOARD PAGE
 // ============================================================
-function renderGA4() {
-  const periods = getPeriods();
-  const cmp = getComparePeriods();
-  const cur = sumObj(GA4.kpis, periods);
-  const prev = cmp ? sumObj(GA4.kpis, cmp) : null;
+function renderDash() {
+  const months=getMonths(), cmpM=getCmp(allMonths.filter(m=>m>='2025-01'));
+  const cur=sumM(months), prev=cmpM?sumM(cmpM):null;
+  const show=!!cmpM;
 
-  const engagement = cur.sessions > 0 ? (cur.engaged_sessions / cur.sessions * 100) : 0;
-  const pEngagement = prev && prev.sessions > 0 ? (prev.engaged_sessions / prev.sessions * 100) : null;
-  const avgEng = cur.active_users > 0 ? (cur.total_eng_time_ms / cur.active_users) : 0;
-  const pAvgEng = prev && prev.active_users > 0 ? (prev.total_eng_time_ms / prev.active_users) : null;
-  const pvUser = cur.active_users > 0 ? (cur.pageviews / cur.active_users) : 0;
-  const pPvUser = prev && prev.active_users > 0 ? (prev.pageviews / prev.active_users) : null;
-  const leads = cur.form_submits + cur.quote_submits + cur.phone_clicks;
-  const pLeads = prev ? prev.form_submits + prev.quote_submits + prev.phone_clicks : null;
-  const leadRate = cur.sessions > 0 ? (leads / cur.sessions * 100) : 0;
-  const pLeadRate = prev && prev.sessions > 0 ? (pLeads / prev.sessions * 100) : null;
+  // KPI main
+  const ae=cur.users_total>0?cur.eng_ms_total/cur.users_total:0;
+  const pae=prev&&prev.users_total>0?prev.eng_ms_total/prev.users_total:null;
+  const trkVal=cur.sessions_tracking!==null?fmt(cur.sessions_tracking):'N/A';
+  const clnVal=cur.sessions_clean!==null?fmt(cur.sessions_clean):'N/A';
 
-  document.getElementById('kpi-row-1').innerHTML = [
-    kpiCard('Sessions', fmt(cur.sessions), prev?changeHtml(cur.sessions,prev.sessions):'', prev?`vs ${fmt(prev.sessions)}`:''),
-    kpiCard('Active Users', fmt(cur.active_users), prev?changeHtml(cur.active_users,prev.active_users):'', prev?`vs ${fmt(prev.active_users)}`:''),
-    kpiCard('New Users', fmt(cur.new_users), prev?changeHtml(cur.new_users,prev.new_users):'', prev?`vs ${fmt(prev.new_users)}`:''),
-    kpiCard('Pageviews', fmt(cur.pageviews), prev?changeHtml(cur.pageviews,prev.pageviews):'', prev?`vs ${fmt(prev.pageviews)}`:''),
-    kpiCard('Engagement', fmtPct(engagement), prev?changeHtml(engagement,pEngagement):'', prev?`vs ${fmtPct(pEngagement)}`:''),
-    kpiCard('Avg Eng. Time', fmtTime(avgEng), prev?changeHtml(avgEng,pAvgEng):'', prev?`vs ${fmtTime(pAvgEng)}`:''),
-    kpiCard('PV / User', pvUser.toFixed(1), prev?changeHtml(pvUser,pPvUser):'', prev?`vs ${pPvUser?.toFixed(1)||'—'}`:''),
-    kpiCard('Leads', fmt(leads), prev?changeHtml(leads,pLeads):'', prev?`vs ${fmt(pLeads)}`:''),
-    kpiCard('Form Submits', fmt(cur.form_submits), prev?changeHtml(cur.form_submits,prev.form_submits):'', prev?`vs ${fmt(prev.form_submits)}`:''),
-  ].join('');
+  let k1='';
+  k1+=kpi('Sessions Total',fmt(cur.sessions_total),show?pill(cur.sessions_total,prev?.sessions_total):'',show?'vs '+fmt(prev?.sessions_total):'');
+  k1+=kpi('Sessions (Tracking)',trkVal,'','');
+  k1+=kpi('Sessions (excl. Tracking)',clnVal,show&&cur.sessions_clean!==null&&prev?.sessions_clean!==null?pill(cur.sessions_clean,prev.sessions_clean):'',show&&prev?.sessions_clean!==null?'vs '+fmt(prev.sessions_clean):'');
+  k1+=kpi('Active Users',fmt(cur.users_total),show?pill(cur.users_total,prev?.users_total):'',show?'vs '+fmt(prev?.users_total):'');
+  k1+=kpi('Avg Eng. Time',fmtT(ae),show?pill(ae,pae):'',show&&pae?'vs '+fmtT(pae):'');
+  document.getElementById('kpi-main').innerHTML=k1;
 
-  document.getElementById('kpi-row-2').innerHTML = [
-    kpiCard('Lead Rate', fmtPct(leadRate), prev?changeHtml(leadRate,pLeadRate):'', prev?`vs ${fmtPct(pLeadRate)}`:''),
-    kpiCard('Quote Requests', fmt(cur.quote_submits), prev?changeHtml(cur.quote_submits,prev.quote_submits):'', prev?`vs ${fmt(prev.quote_submits)}`:''),
-    kpiCard('Phone Clicks', fmt(cur.phone_clicks), prev?changeHtml(cur.phone_clicks,prev.phone_clicks):'', prev?`vs ${fmt(prev.phone_clicks)}`:''),
-    kpiCard('Form Starts', fmt(cur.form_starts), prev?changeHtml(cur.form_starts,prev.form_starts):'', prev?`vs ${fmt(prev.form_starts)}`:''),
-    kpiCard('Search Clicks', fmt(cur.search_clicks), prev?changeHtml(cur.search_clicks,prev.search_clicks):'', prev?`vs ${fmt(prev.search_clicks)}`:''),
-  ].join('');
+  // KPI conversions — Lead Rate replaced with Get a Quote (ORGANIC)
+  const organicLeads = (cur.quote_leads||0) - (cur.paid_leads||0);
+  const prevOrganicLeads = prev ? ((prev.quote_leads||0) - (prev.paid_leads||0)) : null;
+  let k2='';
+  k2+=kpi('Get a Quote (Total)',fmt(cur.quote_leads),show?pill(cur.quote_leads,prev?.quote_leads):'',show?'vs '+fmt(prev?.quote_leads):'');
+  k2+=kpi('Get a Quote (Paid)',fmt(cur.paid_leads),show?pill(cur.paid_leads,prev?.paid_leads):'',show?'vs '+fmt(prev?.paid_leads):'');
+  k2+=kpi('Get a Quote (Organic)',fmt(organicLeads),show?pill(organicLeads,prevOrganicLeads):'',show&&prevOrganicLeads!==null?'vs '+fmt(prevOrganicLeads):'');
+  k2+=kpi('Phone Clicks',fmt(cur.phone_clicks),show?pill(cur.phone_clicks,prev?.phone_clicks):'',show?'vs '+fmt(prev?.phone_clicks):'');
+  document.getElementById('kpi-conv').innerHTML=k2;
 
   // Channel table
-  const curCh = sumList(GA4.channels, periods);
-  const prevCh = cmp ? sumList(GA4.channels, cmp) : null;
-  const prevChMap = {}; if(prevCh) prevCh.forEach(c => prevChMap[c.channel]=c);
-  const show = !!cmp;
-  const pLabel = periods.length>1?'Total':periods[0];
-  const cLabel = cmp?cmp[0]:'';
-
-  let ch = `<table><thead><tr><th rowspan="2">Channel</th>
-    <th colspan="${show?3:1}" class="group-header">Sessions</th>
-    <th colspan="${show?3:1}" class="group-header">Leads</th>
-    <th colspan="${show?3:1}" class="group-header">Form Submits</th>
-    <th colspan="${show?3:1}" class="group-header">Quote Req.</th>
-    <th colspan="${show?3:1}" class="group-header">Lead Rate</th></tr>
-    <tr><th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}
-    <th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}
-    <th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}
-    <th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}
-    <th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}</tr></thead><tbody>`;
-
-  let totC={sessions:0,total_leads:0,form_submits:0,quote_submits:0},totP={sessions:0,total_leads:0,form_submits:0,quote_submits:0};
-  const allCh = ['Direct','Organic','Paid Social','Paid Search','Referral','Email','Other'];
-  allCh.forEach(name => {
-    const c = curCh.find(x=>x.channel===name)||{sessions:0,total_leads:0,form_submits:0,quote_submits:0};
-    const p = prevChMap[name]||{sessions:0,total_leads:0,form_submits:0,quote_submits:0};
-    if(!c.sessions && !p.sessions) return;
-    totC.sessions+=c.sessions; totC.total_leads+=c.total_leads; totC.form_submits+=c.form_submits; totC.quote_submits+=c.quote_submits;
-    totP.sessions+=p.sessions; totP.total_leads+=p.total_leads; totP.form_submits+=p.form_submits; totP.quote_submits+=p.quote_submits;
-    const lr=c.sessions>0?(c.total_leads/c.sessions*100):0, plr=p.sessions>0?(p.total_leads/p.sessions*100):0;
-    ch+=`<tr><td>${name}</td><td>${fmt(c.sessions)}</td>${show?`<td>${fmt(p.sessions)}</td>${changeTd(c.sessions,p.sessions)}`:''}
-      <td>${fmt(c.total_leads)}</td>${show?`<td>${fmt(p.total_leads)}</td>${changeTd(c.total_leads,p.total_leads)}`:''}
-      <td>${fmt(c.form_submits)}</td>${show?`<td>${fmt(p.form_submits)}</td>${changeTd(c.form_submits,p.form_submits)}`:''}
-      <td>${fmt(c.quote_submits)}</td>${show?`<td>${fmt(p.quote_submits)}</td>${changeTd(c.quote_submits,p.quote_submits)}`:''}
-      <td>${fmtPct(lr)}</td>${show?`<td>${fmtPct(plr)}</td>${changeTd(lr,plr)}`:''}</tr>`;
+  const curCh=sumCh(months), prevCh=cmpM?sumCh(cmpM):null;
+  const pChMap={}; if(prevCh) prevCh.forEach(c=>pChMap[c.channel]=c);
+  let ch='<table><thead><tr><th>Channel</th><th>Sessions</th>'+(show?'<th>MoM</th>':'')+'<th>Get a Quote</th>'+(show?'<th>MoM</th>':'')+'<th>Phone</th><th>Lead Rate</th></tr></thead><tbody>';
+  let tC={s:0,q:0,p:0},tP={s:0,q:0,p:0};
+  curCh.forEach(c=>{
+    const p=pChMap[c.channel]||{sessions_clean:0,quote_leads:0,phone_clicks:0};
+    tC.s+=c.sessions_clean;tC.q+=c.quote_leads;tC.p+=c.phone_clicks;
+    tP.s+=p.sessions_clean;tP.q+=p.quote_leads;tP.p+=p.phone_clicks;
+    const r=c.sessions_clean>0?(c.quote_leads/c.sessions_clean*100):0;
+    ch+=`<tr><td>${c.channel}</td><td>${fmt(c.sessions_clean)}</td>${show?pillTd(c.sessions_clean,p.sessions_clean):''}<td>${fmt(c.quote_leads)}</td>${show?pillTd(c.quote_leads,p.quote_leads):''}<td>${fmt(c.phone_clicks)}</td><td>${fmtP(r)}</td></tr>`;
   });
-  const tlr=totC.sessions>0?(totC.total_leads/totC.sessions*100):0, tplr=totP.sessions>0?(totP.total_leads/totP.sessions*100):0;
-  ch+=`<tr><td>Total</td><td>${fmt(totC.sessions)}</td>${show?`<td>${fmt(totP.sessions)}</td>${changeTd(totC.sessions,totP.sessions)}`:''}
-    <td>${fmt(totC.total_leads)}</td>${show?`<td>${fmt(totP.total_leads)}</td>${changeTd(totC.total_leads,totP.total_leads)}`:''}
-    <td>${fmt(totC.form_submits)}</td>${show?`<td>${fmt(totP.form_submits)}</td>${changeTd(totC.form_submits,totP.form_submits)}`:''}
-    <td>${fmt(totC.quote_submits)}</td>${show?`<td>${fmt(totP.quote_submits)}</td>${changeTd(totC.quote_submits,totP.quote_submits)}`:''}
-    <td>${fmtPct(tlr)}</td>${show?`<td>${fmtPct(tplr)}</td>${changeTd(tlr,tplr)}`:''}</tr></tbody></table>`;
-  document.getElementById('channel-table-wrap').innerHTML = ch;
+  const tlr=tC.s>0?(tC.q/tC.s*100):0;
+  ch+=`<tr><td>Total</td><td>${fmt(tC.s)}</td>${show?pillTd(tC.s,tP.s):''}<td>${fmt(tC.q)}</td>${show?pillTd(tC.q,tP.q):''}<td>${fmt(tC.p)}</td><td>${fmtP(tlr)}</td></tr></tbody></table>`;
+  document.getElementById('ch-table').innerHTML=ch;
 
   // Sections table
-  const curS = sumList(GA4.sections, periods);
-  const prevS = cmp ? sumList(GA4.sections, cmp) : null;
-  const prevSMap = {}; if(prevS) prevS.forEach(s => prevSMap[s.section]=s);
-
-  let st = `<table><thead><tr><th rowspan="2">Section</th>
-    <th colspan="${show?3:1}" class="group-header">Sessions</th>
-    <th colspan="${show?3:1}" class="group-header">Pageviews</th>
-    <th colspan="${show?3:1}" class="group-header">PV/Session</th></tr>
-    <tr><th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}
-    <th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}
-    <th>${pLabel}</th>${show?`<th>${cLabel}</th><th>MoM</th>`:''}</tr></thead><tbody>`;
-  let ts={sessions:0,pageviews:0},tp={sessions:0,pageviews:0};
-  curS.forEach(s => {
-    const p=prevSMap[s.section]||{sessions:0,pageviews:0};
-    ts.sessions+=s.sessions; ts.pageviews+=s.pageviews; tp.sessions+=p.sessions; tp.pageviews+=p.pageviews;
-    const pv=s.sessions>0?s.pageviews/s.sessions:0, ppv=p.sessions>0?p.pageviews/p.sessions:0;
-    st+=`<tr><td>${s.section}</td><td>${fmt(s.sessions)}</td>${show?`<td>${fmt(p.sessions)}</td>${changeTd(s.sessions,p.sessions)}`:''}
-      <td>${fmt(s.pageviews)}</td>${show?`<td>${fmt(p.pageviews)}</td>${changeTd(s.pageviews,p.pageviews)}`:''}
-      <td>${pv.toFixed(2)}</td>${show?`<td>${ppv.toFixed(2)}</td>${changeTd(pv,ppv)}`:''}</tr>`;
+  const curS=sumSec(months), prevS=cmpM?sumSec(cmpM):null;
+  const pSMap={}; if(prevS) prevS.forEach(s=>pSMap[s.section]=s);
+  let st='<table><thead><tr><th>Section</th><th>Sessions</th>'+(show?'<th>MoM</th>':'')+'<th>Pageviews</th>'+(show?'<th>MoM</th>':'')+'<th>PV/Session</th></tr></thead><tbody>';
+  let ts={s:0,p:0},tp={s:0,p:0};
+  curS.forEach(s=>{
+    const p=pSMap[s.section]||{sessions:0,pageviews:0};
+    ts.s+=s.sessions;ts.p+=s.pageviews;tp.s+=p.sessions;tp.p+=p.pageviews;
+    const pv=s.sessions>0?s.pageviews/s.sessions:0;
+    st+=`<tr><td>${s.section}</td><td>${fmt(s.sessions)}</td>${show?pillTd(s.sessions,p.sessions):''}<td>${fmt(s.pageviews)}</td>${show?pillTd(s.pageviews,p.pageviews):''}<td>${pv.toFixed(2)}</td></tr>`;
   });
-  const tpvs=ts.sessions>0?ts.pageviews/ts.sessions:0, tppvs=tp.sessions>0?tp.pageviews/tp.sessions:0;
-  st+=`<tr><td>Total</td><td>${fmt(ts.sessions)}</td>${show?`<td>${fmt(tp.sessions)}</td>${changeTd(ts.sessions,tp.sessions)}`:''}
-    <td>${fmt(ts.pageviews)}</td>${show?`<td>${fmt(tp.pageviews)}</td>${changeTd(ts.pageviews,tp.pageviews)}`:''}
-    <td>${tpvs.toFixed(2)}</td>${show?`<td>${tppvs.toFixed(2)}</td>${changeTd(tpvs,tppvs)}`:''}</tr></tbody></table>`;
-  document.getElementById('sections-table-wrap').innerHTML = st;
+  const tpv=ts.s>0?ts.p/ts.s:0;
+  st+=`<tr><td>Total</td><td>${fmt(ts.s)}</td>${show?pillTd(ts.s,tp.s):''}<td>${fmt(ts.p)}</td>${show?pillTd(ts.p,tp.p):''}<td>${tpv.toFixed(2)}</td></tr></tbody></table>`;
+  document.getElementById('sec-table').innerHTML=st;
+}
+
+function kpi(label,value,delta,vs) {
+  return `<div class="kpi"><div class="kl">${label}</div><div class="kv">${value}</div>${delta?'<div class="kd">'+delta+'</div>':''}${vs?'<div class="kvs">'+vs+'</div>':''}</div>`;
 }
 
 // ============================================================
-// RENDER HISTORICAL TRENDS
+// RENDER: META ADS PAGE (period-aware)
 // ============================================================
-function renderTrends() {
-  // Meta Ads charts
-  renderBarChart('chart-meta-spend', META_MONTHLY, 'cost_usd', '#4285f4', v => '$'+Math.round(v).toLocaleString());
-  renderBarChart('chart-meta-leads', META_MONTHLY, 'leads', '#34a853', v => v.toLocaleString());
-  renderBarChart('chart-meta-cpl', META_MONTHLY, '_cpl', '#ea4335', v => '$'+v.toFixed(2));
-  renderBarChart('chart-meta-impr', META_MONTHLY, 'impressions', '#fbbc04', v => (v/1000).toFixed(0)+'K');
+function renderMeta() {
+  const selMonths = getMonthsFor(metaMonths);
+  const md = DATA.meta_monthly.filter(d => selMonths.includes(d.month));
+  if(!md.length) { document.getElementById('meta-kpis').innerHTML='<div style="color:var(--tx3);padding:12px">No data for selected period</div>'; return; }
 
-  // Meta trend table
-  let mt = `<table class="trend-table"><thead><tr><th>Month</th><th>Spend</th><th>Impressions</th><th>Clicks</th><th>Leads</th><th>CPL</th><th>Reach</th><th>LPV</th></tr></thead><tbody>`;
-  META_MONTHLY.forEach(d => {
-    const cpl = d.leads > 0 ? d.cost_usd / d.leads : 0;
-    mt += `<tr><td>${labelMonth(d.month)}</td><td>${fmtMoney(d.cost_usd)}</td><td>${fmt(d.impressions)}</td><td>${fmt(d.clicks)}</td><td>${fmt(d.leads)}</td><td>${cpl>0?fmtMoney(cpl):'—'}</td><td>${fmt(d.reach)}</td><td>${fmt(d.landing_page_views)}</td></tr>`;
+  const cmpM = getCmp(metaMonths.filter(m=>m>='2025-01'));
+
+  // KPIs
+  const totSpend=md.reduce((s,d)=>s+d.spend,0);
+  const totLeads=md.reduce((s,d)=>s+d.leads,0);
+  const totClicks=md.reduce((s,d)=>s+d.clicks,0);
+  const totImpr=md.reduce((s,d)=>s+d.impressions,0);
+  const avgCpl=totLeads>0?totSpend/totLeads:0;
+  const avgCtr=totImpr>0?(totClicks/totImpr*100):0;
+
+  let prevData=null;
+  if(cmpM) {
+    const pm=DATA.meta_monthly.filter(d=>cmpM.includes(d.month));
+    if(pm.length) prevData={spend:pm.reduce((s,d)=>s+d.spend,0),leads:pm.reduce((s,d)=>s+d.leads,0),clicks:pm.reduce((s,d)=>s+d.clicks,0),impressions:pm.reduce((s,d)=>s+d.impressions,0)};
+  }
+  const show=!!prevData;
+
+  let mk='';
+  mk+=kpi('Total Spend',fmtM(Math.round(totSpend)),show?pill(totSpend,prevData.spend):'','');
+  mk+=kpi('Total Leads',fmt(totLeads),show?pill(totLeads,prevData.leads):'','');
+  mk+=kpi('Avg CPL',fmtM2(avgCpl),'','');
+  mk+=kpi('Avg CTR',fmtP2(avgCtr),'','');
+  mk+=kpi('Total Impressions',fmt(totImpr),show?pill(totImpr,prevData.impressions):'','');
+  mk+=kpi('Total Clicks',fmt(totClicks),show?pill(totClicks,prevData.clicks):'','');
+  document.getElementById('meta-kpis').innerHTML=mk;
+
+  // Charts — always show full filtered data
+  const labels=md.map(d=>lm(d.month));
+  makeChart('ch-meta-spend',labels,[
+    {label:'Spend ($)',data:md.map(d=>d.spend),color:'#2563eb',yAxis:'y'},
+    {label:'Leads',data:md.map(d=>d.leads),color:'#15803d',yAxis:'y1'}
+  ],{y:{ticks:{callback:v=>'$'+v.toLocaleString()}},y1:{position:'right',grid:{drawOnChartArea:false}}});
+
+  const cpls=md.map(d=>d.leads>0?d.spend/d.leads:0);
+  const ctrs=md.map(d=>d.impressions>0?(d.clicks/d.impressions*100):0);
+  makeChart('ch-meta-cpl',labels,[
+    {label:'CPL ($)',data:cpls,color:'#dc2626',yAxis:'y'},
+    {label:'CTR (%)',data:ctrs,color:'#2563eb',yAxis:'y1'}
+  ],{y:{ticks:{callback:v=>'$'+v.toFixed(0)}},y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v.toFixed(1)+'%'}}});
+
+  makeChart('ch-meta-impr',labels,[
+    {label:'Impressions',data:md.map(d=>d.impressions),color:'#f59e0b',yAxis:'y'},
+    {label:'Reach',data:md.map(d=>d.reach),color:'#8b5cf6',yAxis:'y1'}
+  ],{y:{},y1:{position:'right',grid:{drawOnChartArea:false}}});
+
+  makeChart('ch-meta-clicks',labels,[
+    {label:'Clicks',data:md.map(d=>d.clicks),color:'#2563eb',yAxis:'y'},
+    {label:'Link Clicks',data:md.map(d=>d.link_clicks),color:'#06b6d4',yAxis:'y1'}
+  ],{y:{},y1:{position:'right',grid:{drawOnChartArea:false}}});
+
+  // Campaigns table (filtered by period)
+  let campData;
+  if(state.period==='all') {
+    campData = DATA.meta_campaigns.slice(0,15);
+  } else {
+    // Aggregate from monthly campaign data
+    const cm = (DATA.meta_campaigns_monthly||[]).filter(d=>selMonths.includes(d.month));
+    const cmap={};
+    cm.forEach(d=>{
+      if(!cmap[d.campaignName]) cmap[d.campaignName]={campaignName:d.campaignName,spend:0,impressions:0,clicks:0,leads:0,reach:0};
+      cmap[d.campaignName].spend+=d.spend; cmap[d.campaignName].impressions+=d.impressions;
+      cmap[d.campaignName].clicks+=d.clicks; cmap[d.campaignName].leads+=d.leads;
+      cmap[d.campaignName].reach+=d.reach;
+    });
+    campData = Object.values(cmap).sort((a,b)=>b.spend-a.spend).slice(0,15);
+    campData.forEach(c=>{
+      c.ctr=c.impressions>0?(c.clicks/c.impressions*100):0;
+      c.cpc=c.clicks>0?c.spend/c.clicks:0;
+      c.cpl=c.leads>0?c.spend/c.leads:0;
+    });
+  }
+  let mc='<table><thead><tr><th>Campaign</th><th>Spend</th><th>Impr</th><th>Clicks</th><th>CTR</th><th>CPC</th><th>Leads</th><th>CPL</th></tr></thead><tbody>';
+  campData.forEach(d=>{
+    mc+=`<tr><td>${d.campaignName}</td><td>${fmtM2(d.spend)}</td><td>${fmt(d.impressions)}</td><td>${fmt(d.clicks)}</td><td>${d.ctr?fmtP2(d.ctr):'\u2014'}</td><td>${d.cpc?fmtM2(d.cpc):'\u2014'}</td><td>${fmt(d.leads)}</td><td>${d.cpl?fmtM2(d.cpl):'\u2014'}</td></tr>`;
   });
-  mt += '</tbody></table>';
-  document.getElementById('meta-trend-table').innerHTML = mt;
+  mc+='</tbody></table>';
+  document.getElementById('meta-camp-table').innerHTML=mc;
 
-  // GSC charts
-  renderBarChart('chart-gsc-clicks', GSC_MONTHLY, 'clicks', '#4285f4', v => v.toLocaleString());
-  renderBarChart('chart-gsc-impr', GSC_MONTHLY, 'impressions', '#fbbc04', v => (v/1000).toFixed(0)+'K');
-
-  // GSC trend table
-  let gt = `<table class="trend-table"><thead><tr><th>Month</th><th>Impressions</th><th>Clicks</th><th>CTR</th></tr></thead><tbody>`;
-  GSC_MONTHLY.forEach(d => {
-    gt += `<tr><td>${labelMonth(d.month)}</td><td>${fmt(d.impressions)}</td><td>${fmt(d.clicks)}</td><td>${d.ctr_pct.toFixed(2)}%</td></tr>`;
+  // Monthly breakdown
+  let mt='<table><thead><tr><th>Month</th><th>Spend</th><th>MoM</th><th>Impr</th><th>Clicks</th><th>Leads</th><th>MoM</th><th>CPL</th><th>Reach</th><th>LPV</th></tr></thead><tbody>';
+  md.forEach((d,i)=>{
+    const p=i>0?md[i-1]:null;
+    const cpl=d.leads>0?d.spend/d.leads:0;
+    mt+=`<tr><td>${lm(d.month)}</td><td>${fmtM2(d.spend)}</td>${pillTd(d.spend,p?.spend)}<td>${fmt(d.impressions)}</td><td>${fmt(d.clicks)}</td><td>${fmt(d.leads)}</td>${pillTd(d.leads,p?.leads)}<td>${cpl>0?fmtM2(cpl):'\u2014'}</td><td>${fmt(d.reach)}</td><td>${fmt(d.lpv)}</td></tr>`;
   });
-  gt += '</tbody></table>';
-  document.getElementById('gsc-trend-table').innerHTML = gt;
+  mt+='</tbody></table>';
+  document.getElementById('meta-monthly-table').innerHTML=mt;
+}
 
-  // Google Ads trend table
-  let at = `<table class="trend-table"><thead><tr><th>Month</th><th>Spend</th><th>Impressions</th><th>Clicks</th><th>Conversions</th><th>CPC</th></tr></thead><tbody>`;
-  GADS_MONTHLY.forEach(d => {
-    const cpc = d.clicks > 0 ? d.cost_usd / d.clicks : 0;
-    at += `<tr><td>${labelMonth(d.month)}</td><td>${fmtMoney(d.cost_usd)}</td><td>${fmt(d.impressions)}</td><td>${fmt(d.clicks)}</td><td>${fmt(d.conversions)}</td><td>${cpc>0?fmtMoney(cpc):'—'}</td></tr>`;
+// ============================================================
+// RENDER: GOOGLE ADS PAGE (period-aware, unified timeline)
+// ============================================================
+function renderGads() {
+  const selMonths = getMonthsFor(gadsMonths);
+  const gd = gadsAll.filter(d => selMonths.includes(d.month));
+  if(!gd.length) { document.getElementById('gads-kpis').innerHTML='<div style="color:var(--tx3);padding:12px">No data for selected period</div>'; return; }
+
+  const cmpM = getCmp(gadsMonths.filter(m=>m>='2025-01'));
+
+  const totSpend=gd.reduce((s,d)=>s+d.spend,0);
+  const totClicks=gd.reduce((s,d)=>s+d.clicks,0);
+  const totImpr=gd.reduce((s,d)=>s+d.impressions,0);
+  const avgCpc=totClicks>0?totSpend/totClicks:0;
+  const avgCtr=totImpr>0?(totClicks/totImpr*100):0;
+
+  let prevData=null;
+  if(cmpM) {
+    const pm=gadsAll.filter(d=>cmpM.includes(d.month));
+    if(pm.length) prevData={spend:pm.reduce((s,d)=>s+d.spend,0),clicks:pm.reduce((s,d)=>s+d.clicks,0),impressions:pm.reduce((s,d)=>s+d.impressions,0)};
+  }
+  const show=!!prevData;
+
+  let gk='';
+  gk+=kpi('Total Spend',fmtM(Math.round(totSpend)),show?pill(totSpend,prevData.spend):'','');
+  gk+=kpi('Total Clicks',fmt(totClicks),show?pill(totClicks,prevData.clicks):'','');
+  gk+=kpi('Total Impressions',fmt(totImpr),show?pill(totImpr,prevData.impressions):'','');
+  gk+=kpi('Avg CPC',fmtM2(avgCpc),'','');
+  gk+=kpi('Avg CTR',fmtP2(avgCtr),'','');
+  document.getElementById('gads-kpis').innerHTML=gk;
+
+  // Charts
+  const labels=gd.map(d=>lm(d.month));
+  makeChart('ch-gads-spend',labels,[
+    {label:'Spend ($)',data:gd.map(d=>d.spend),color:'#2563eb',yAxis:'y'},
+    {label:'Clicks',data:gd.map(d=>d.clicks),color:'#15803d',yAxis:'y1'}
+  ],{y:{ticks:{callback:v=>'$'+v.toLocaleString()}},y1:{position:'right',grid:{drawOnChartArea:false}}});
+
+  const ctrs=gd.map(d=>d.impressions>0?(d.clicks/d.impressions*100):0);
+  makeChart('ch-gads-impr',labels,[
+    {label:'Impressions',data:gd.map(d=>d.impressions),color:'#f59e0b',yAxis:'y'},
+    {label:'CTR (%)',data:ctrs,color:'#dc2626',yAxis:'y1'}
+  ],{y:{},y1:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v.toFixed(1)+'%'}}});
+
+  // Campaigns (only available for recent months)
+  let gc='<table><thead><tr><th>Campaign</th><th>Spend</th><th>Impr</th><th>Clicks</th><th>CTR</th><th>CPC</th></tr></thead><tbody>';
+  DATA.gads_campaigns.forEach(d=>{
+    gc+=`<tr><td>${d.campaign_name}</td><td>${fmtM2(d.spend)}</td><td>${fmt(d.impressions)}</td><td>${fmt(d.clicks)}</td><td>${d.ctr?fmtP2(d.ctr):'\u2014'}</td><td>${d.cpc?fmtM2(d.cpc):'\u2014'}</td></tr>`;
   });
-  at += '</tbody></table>';
-  document.getElementById('gads-trend-table').innerHTML = at;
+  gc+='</tbody></table>';
+  document.getElementById('gads-camp-table').innerHTML=gc;
+
+  // Keywords
+  let gw='<table><thead><tr><th>Keyword</th><th>Match</th><th>Spend</th><th>Impr</th><th>Clicks</th><th>CTR</th><th>CPC</th></tr></thead><tbody>';
+  DATA.gads_keywords.slice(0,10).forEach(d=>{
+    gw+=`<tr><td>${d.keyword}</td><td style="font-size:10px;color:var(--tx3)">${d.match_type}</td><td>${fmtM2(d.spend)}</td><td>${fmt(d.impressions)}</td><td>${fmt(d.clicks)}</td><td>${d.ctr?fmtP2(d.ctr):'\u2014'}</td><td>${d.cpc?fmtM2(d.cpc):'\u2014'}</td></tr>`;
+  });
+  gw+='</tbody></table>';
+  document.getElementById('gads-kw-table').innerHTML=gw;
+
+  // Monthly breakdown
+  let gt='<table><thead><tr><th>Month</th><th>Spend</th><th>MoM</th><th>Impr</th><th>Clicks</th><th>CPC</th></tr></thead><tbody>';
+  gd.forEach((d,i)=>{
+    const p=i>0?gd[i-1]:null;
+    const cpc=d.clicks>0?d.spend/d.clicks:0;
+    gt+=`<tr><td>${lm(d.month)}</td><td>${fmtM2(d.spend)}</td>${pillTd(d.spend,p?.spend)}<td>${fmt(d.impressions)}</td><td>${fmt(d.clicks)}</td><td>${cpc>0?fmtM2(cpc):'\u2014'}</td></tr>`;
+  });
+  gt+='</tbody></table>';
+  document.getElementById('gads-monthly-table').innerHTML=gt;
+}
+
+// ============================================================
+// RENDER: GSC PAGE (period-aware, unified timeline)
+// ============================================================
+function renderGsc() {
+  const selMonths = getMonthsFor(gscMonths);
+  const gd = gscAll.filter(d => selMonths.includes(d.month));
+  if(!gd.length) { document.getElementById('gsc-kpis').innerHTML='<div style="color:var(--tx3);padding:12px">No data for selected period</div>'; return; }
+
+  const cmpM = getCmp(gscMonths.filter(m=>m>='2025-01'));
+
+  const totClicks=gd.reduce((s,d)=>s+d.clicks,0);
+  const totImpr=gd.reduce((s,d)=>s+d.impressions,0);
+  const avgCtr=totImpr>0?(totClicks/totImpr*100):0;
+
+  let prevData=null;
+  if(cmpM) {
+    const pm=gscAll.filter(d=>cmpM.includes(d.month));
+    if(pm.length) prevData={clicks:pm.reduce((s,d)=>s+d.clicks,0),impressions:pm.reduce((s,d)=>s+d.impressions,0)};
+  }
+  const show=!!prevData;
+
+  let gk='';
+  gk+=kpi('Total Clicks',fmt(totClicks),show?pill(totClicks,prevData.clicks):'','');
+  gk+=kpi('Total Impressions',fmt(totImpr),show?pill(totImpr,prevData.impressions):'','');
+  gk+=kpi('Avg CTR',fmtP2(avgCtr),'','');
+  document.getElementById('gsc-kpis').innerHTML=gk;
+
+  // Charts
+  const labels=gd.map(d=>lm(d.month));
+  makeChart('ch-gsc-main',labels,[
+    {label:'Clicks',data:gd.map(d=>d.clicks),color:'#2563eb',yAxis:'y'},
+    {label:'Impressions',data:gd.map(d=>d.impressions),color:'#f59e0b',yAxis:'y1'}
+  ],{y:{},y1:{position:'right',grid:{drawOnChartArea:false}}});
+
+  makeChart('ch-gsc-ctr',labels,[
+    {label:'CTR (%)',data:gd.map(d=>d.ctr),color:'#15803d',yAxis:'y'},
+    {label:'Avg Position',data:gd.map(d=>d.avg_position),color:'#8b5cf6',yAxis:'y1'}
+  ],{y:{ticks:{callback:v=>v.toFixed(1)+'%'}},y1:{position:'right',grid:{drawOnChartArea:false},reverse:true}});
+
+  // Top queries
+  let gq='<table><thead><tr><th>Query</th><th>Clicks</th><th>Impr</th><th>CTR</th><th>Avg Position</th></tr></thead><tbody>';
+  DATA.gsc_queries.slice(0,10).forEach(d=>{
+    gq+=`<tr><td>${d.query}</td><td>${fmt(d.clicks)}</td><td>${fmt(d.impressions)}</td><td>${fmtP2(d.ctr)}</td><td>${d.avg_position}</td></tr>`;
+  });
+  gq+='</tbody></table>';
+  document.getElementById('gsc-q-table').innerHTML=gq;
+
+  // Monthly breakdown
+  let gt='<table><thead><tr><th>Month</th><th>Clicks</th><th>MoM</th><th>Impr</th><th>CTR</th><th>Avg Pos</th><th>Source</th></tr></thead><tbody>';
+  gd.forEach((d,i)=>{
+    const p=i>0?gd[i-1]:null;
+    const srcLabel = d.src==='manual'?'Manual':d.src==='raw'?'Raw':'Export';
+    gt+=`<tr><td>${lm(d.month)}</td><td>${fmt(d.clicks)}</td>${pillTd(d.clicks,p?.clicks)}<td>${fmt(d.impressions)}</td><td>${fmtP2(d.ctr)}</td><td>${d.avg_position||'\u2014'}</td><td style="font-size:10px;color:var(--tx3)">${srcLabel}</td></tr>`;
+  });
+  gt+='</tbody></table>';
+  document.getElementById('gsc-monthly-table').innerHTML=gt;
+}
+
+// ============================================================
+// CHART.JS HELPER
+// ============================================================
+const chartInstances={};
+function makeChart(canvasId, labels, datasets, scaleOpts) {
+  const ctx=document.getElementById(canvasId);
+  if(!ctx) return;
+  const ds=datasets.map((d,i)=>({
+    label:d.label,
+    data:d.data,
+    borderColor:d.color,
+    backgroundColor:d.color+'12',
+    fill:true,
+    tension:0.3,
+    borderWidth:2,
+    pointRadius:3,
+    pointHoverRadius:5,
+    yAxisID:d.yAxis||'y'
+  }));
+
+  const scales={};
+  if(scaleOpts) {
+    Object.keys(scaleOpts).forEach(k=>{
+      scales[k]=Object.assign({
+        beginAtZero:false,
+        grid:{color:'#f0f0f0'},
+        ticks:{font:{size:10,family:'DM Sans'}}
+      }, scaleOpts[k]);
+    });
+  }
+
+  if(chartInstances[canvasId]) chartInstances[canvasId].destroy();
+  chartInstances[canvasId]=new Chart(ctx,{
+    type:'line',
+    data:{labels, datasets:ds},
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{intersect:false,mode:'index'},
+      plugins:{
+        legend:{position:'top',labels:{font:{size:11,family:'DM Sans'},usePointStyle:true,pointStyle:'circle',padding:12}},
+        tooltip:{
+          backgroundColor:'#1c1917',
+          titleFont:{size:11,family:'DM Sans'},
+          bodyFont:{size:11,family:'DM Sans'},
+          padding:8,
+          cornerRadius:6
+        }
+      },
+      scales
+    }
+  });
+}
+
+// ============================================================
+// RENDER CURRENT PAGE (called on period change and tab switch)
+// ============================================================
+function renderCurrentPage() {
+  const activePage = document.querySelector('.page.active');
+  if(!activePage) return;
+  const id = activePage.id;
+  if(id==='page-dashboard') renderDash();
+  else if(id==='page-meta') renderMeta();
+  else if(id==='page-gads') renderGads();
+  else if(id==='page-gsc') renderGsc();
 }
 
 // ============================================================
 // INIT
 // ============================================================
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    state[btn.dataset.filter] = btn.dataset.value;
-    renderGA4();
+function initDashboard() {
+  // Period buttons (USSC-style toggle group)
+  let pb='<button class="tb on" data-action="period" data-val="all">All</button>';
+  filterMonths.forEach(m=>{
+    pb+=`<button class="tb" data-action="period" data-val="${m}">${lm(m)}</button>`;
   });
-});
+  document.getElementById('period-btns').innerHTML=pb;
 
-renderGA4();
-renderTrends();
+  // Global filter click handler
+  document.getElementById('global-filter').addEventListener('click',e=>{
+    if(!e.target.classList.contains('tb')) return;
+    const action=e.target.dataset.action, val=e.target.dataset.val;
+    // Toggle within group: find parent .tg
+    const tg = e.target.closest('.tg');
+    if(tg) {
+      tg.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+      e.target.classList.add('on');
+    }
+    state[action]=val;
+    renderCurrentPage();
+  });
+
+  // Render all pages initially
+  renderDash();
+  renderMeta();
+  renderGads();
+  renderGsc();
+}
 </script>
 </body>
 </html>
